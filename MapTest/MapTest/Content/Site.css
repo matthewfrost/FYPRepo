@@ -1,0 +1,16 @@
+﻿
+
+#map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+html, body {
+height: 100%;
+margin: 0;
+padding: 0;
+}
+
+.card{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    background-color: whitesmoke;
+}

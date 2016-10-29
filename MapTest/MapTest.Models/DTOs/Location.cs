@@ -14,9 +14,9 @@ namespace MapTest.Models.DTOs
         public string Tag { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        private FYPracticeEntities db = new FYPracticeEntities();
+        private static FYPracticeEntities db = new FYPracticeEntities();
 
-        public List<Location> getAll()
+        public static List<Location> getAll()
         {
             var Locations = db.Location.AsEnumerable();
 
@@ -32,9 +32,17 @@ namespace MapTest.Models.DTOs
             return location;
         }
 
-        public void save()
+        public static void save(Location l)
         {
+            db.Location.Add(new Models.Location
+            {
+                Name = l.Name,
+                TagName = l.Tag,
+                Latitude = l.Latitude,
+                Longitude = l.Longitude
+            });
 
+            db.SaveChanges();
         }
     }
 }

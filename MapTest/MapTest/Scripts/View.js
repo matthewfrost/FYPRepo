@@ -58,9 +58,20 @@ function initMap() {
     });
 
     function success(data, status, jqxhr) {
+        var location;
         for (var i = 0; i < data.length; i++) {
-
+            Map.View.locations.push({ lat: data[i].Latitude, lng: data[i].Longitude });
         }
+
+        var markers = Map.View.locations.map(function (location, i) {
+            return new google.maps.Marker({
+                position: location
+            });
+        });
+
+        var markerCluster = new MarkerClusterer(map, markers,
+              { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+        debugger;
     }
 
 }

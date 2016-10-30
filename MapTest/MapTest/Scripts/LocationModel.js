@@ -2,10 +2,10 @@
     Model: {
         Location: function() {
             var self = this;
-            self.Name = "";
-            self.Tag = ""
-            self.Latitude = 0,
-            self.Longitude = 0
+            self.Name = ko.observable(null);
+            self.Tag = ko.observable(null);
+            self.Latitude = ko.observable(null);
+            self.Longitude = ko.observable(null);
         }
     }
 });

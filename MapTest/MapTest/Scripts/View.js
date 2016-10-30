@@ -1,35 +1,45 @@
 ﻿var Map = $.extend(true, {}, Map, {
     View: {
         locations: [],
-        self: this,
+        locationDetails: ko.observableArray([]),
+        selectedLocaton: ko.observable(null),
         currentLat: 0,
         currentLong: 0,
         placeMarker: function (location, map, event) {
+
             Map.View.locations.push(location);
             var markers = Map.View.locations.map(function (location, i) {
-                return new google.maps.Marker({
+                var marker = new google.maps.Marker({
                     position: location
                 });
+
+                google.maps.event.addListener(marker, "click", function () {
+                    Map.View.selectedLocaton(Map.View.locationDetails()[i]);
+                });
+
+                return marker;
             });
-            
+
             Map.View.currentLat = location.lat();
             Map.View.currentLong = location.lng();
             jQuery('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
 
             var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+
+
         },
 
         saveLocation: function () {
             var Name, Tag, Location
             Location = new Map.Model.Location();
-            Location.Name = $('#locationName').val();
-            Location.Tag = $('#locationTag').val();
-            Location.Latitude = Map.View.currentLat;
-            Location.Longitude = Map.View.currentLong;
-            
+            Location.Name($('#locationName').val());
+            Location.Tag($('#locationTag').val());
+            Location.Latitude(Map.View.currentLat);
+            Location.Longitude(Map.View.currentLong);
+
             Map.Controller.save({
-                data: JSON.stringify(Location),
+                data: JSON.stringify(ko.mapping.toJS(Location)),
                 success: success
             });
 
@@ -37,10 +47,12 @@
                 $('#locationCard').css('display', 'none');
                 $('#locationTag').val('');
                 $('#locationName').val('');
+                Map.View.locationDetails().push(Location);
+
+
             }
         }
     }
-
 });
 
 function initMap() {
@@ -58,22 +70,33 @@ function initMap() {
     });
 
     function success(data, status, jqxhr) {
-        var location;
+        var Location, marker;
+
         for (var i = 0; i < data.length; i++) {
             Map.View.locations.push({ lat: data[i].Latitude, lng: data[i].Longitude });
+            Location = new Map.Model.Location();
+            Location.Name(data[i].Name);
+            Location.Tag(data[i].Tag);
+            Location.Latitude(data[i].Latitude);
+            Location.Longitude(data[i].Longitude);
+            Map.View.locationDetails().push(Location);
         }
 
         var markers = Map.View.locations.map(function (location, i) {
-            return new google.maps.Marker({
+            var marker = new google.maps.Marker({
                 position: location
             });
+
+            google.maps.event.addListener(marker, "click", function () {
+                Map.View.selectedLocaton(Map.View.locationDetails()[i]);
+            });
+
+            return marker;
         });
 
         var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
-        debugger;
     }
-
 }
 
 $(function () {

@@ -163,6 +163,8 @@
     <Content Include="Scripts\libs\jquery.validate.min.js" />
     <Content Include="Scripts\libs\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\libs\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\libs\knockout-3.4.0.js" />
+    <Content Include="Scripts\libs\ko.mapping.js" />
     <Content Include="Scripts\LocationModel.js" />
     <Content Include="Scripts\libs\modernizr-2.6.2.js" />
     <Content Include="Scripts\libs\respond.js" />
@@ -170,7 +172,9 @@
     <None Include="Scripts\libs\_references.js" />
     <Content Include="Scripts\View.js" />
     <Content Include="Index.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

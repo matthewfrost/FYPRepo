@@ -1,8 +1,9 @@
-﻿var Map = $.extend(true, {}, Map, {
+﻿var overlay;
+var Map = $.extend(true, {}, Map, {
     View: {
         locations: [],
         locationDetails: ko.observableArray([]),
-        selectedLocaton: ko.observable(null),
+        selectedLocation: ko.observable(null),
         currentLat: 0,
         currentLong: 0,
         placeMarker: function (location, map, event) {
@@ -13,8 +14,12 @@
                     position: location
                 });
 
-                google.maps.event.addListener(marker, "click", function () {
-                    Map.View.selectedLocaton(Map.View.locationDetails()[i]);
+                google.maps.event.addListener(marker, "click", function (event) {
+                    debugger;
+                    Map.View.selectedLocation(Map.View.locationDetails()[i]);
+                    var projection = overlay.getProjection();
+                    var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
+                    $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
                 });
 
                 return marker;
@@ -22,7 +27,7 @@
 
             Map.View.currentLat = location.lat();
             Map.View.currentLong = location.lng();
-            jQuery('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
+            $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
 
             var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
@@ -61,6 +66,10 @@ function initMap() {
         center: { lat: 54.5779746, lng: -1.1043465 }
     });
 
+    overlay = new google.maps.OverlayView();
+    overlay.draw = function () { };
+    overlay.setMap(map);
+
     map.addListener('rightclick', function (e) {
         Map.View.placeMarker(e.latLng, map, e);
     });
@@ -87,8 +96,12 @@ function initMap() {
                 position: location
             });
 
-            google.maps.event.addListener(marker, "click", function () {
-                Map.View.selectedLocaton(Map.View.locationDetails()[i]);
+            google.maps.event.addListener(marker, "click", function (event, data) {
+                Map.View.selectedLocation(Map.View.locationDetails()[i]);
+                debugger;
+                var projection = overlay.getProjection();
+                var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
+                $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
             });
 
             return marker;
@@ -96,9 +109,12 @@ function initMap() {
 
         var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+
+        ko.applyBindings(Map.View.locationDetails)
     }
 }
 
 $(function () {
     $('.savebtn').on('click', Map.View.saveLocation);
+    
 });

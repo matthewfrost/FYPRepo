@@ -24,11 +24,11 @@
     <div id="locationCard" class="card container" style="display: none">
         <div class="row cardRow">
             <label class="col-xs-4" for="locationName">Name</label>
-            <input class="col-xs-6" id="locationName" type="text" />
+            <input data-bind="text: Name()" class="col-xs-6" id="locationName" type="text" />
         </div>
         <div class="row cardRow">
             <label class="col-xs-4" for="locationTag">Tag Name</label>
-            <input class="col-xs-6" id="locationTag" type="text" />
+            <input data-bind="text:Tag()" class="col-xs-6" id="locationTag" type="text" />
         </div>
         <div class="row">
             <button class="col-xs-3 savebtn">Save</button>

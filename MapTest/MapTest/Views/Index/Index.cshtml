@@ -8,10 +8,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title></title>
-    <link href="~/Content/Site.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/libs")
 </head>
 <body>
-    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/LocationModel.js"></script>
+    <script src="~/Scripts/Controller.js"></script>
     <script src="~/Scripts/View.js"></script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>
@@ -20,12 +22,16 @@
     </script>
     <div id="map"></div>
     <div id="locationCard" class="card container" style="display: none">
-        <div>
-            <label class="col-xs-1" for="locationName">Name</label>
-            <input class="col-xs-4 col-xs-push-1" id="locationName" type="text" />
+        <div class="row cardRow">
+            <label class="col-xs-4" for="locationName">Name</label>
+            <input data-bind="text: Name()" class="col-xs-6" id="locationName" type="text" />
         </div>
-        <div>
-            <button class="col-xs-2">Save</button>
+        <div class="row cardRow">
+            <label class="col-xs-4" for="locationTag">Tag Name</label>
+            <input data-bind="text:Tag()" class="col-xs-6" id="locationTag" type="text" />
+        </div>
+        <div class="row">
+            <button class="col-xs-3 savebtn">Save</button>
         </div>
     </div>
 </body>

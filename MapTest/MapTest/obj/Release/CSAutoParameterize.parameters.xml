@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="FYPracticeEntities-Web.config Connection String" description="FYPracticeEntities Connection String used in web.config by the application to access the database." defaultValue="metadata=res://*/MapTestDB.csdl|res://*/MapTestDB.ssdl|res://*/MapTestDB.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=HOMESERVER;initial catalog=FYPractice;persist security info=True;user id=MatthewDev;password=Elliot1995;MultipleActiveResultSets=True;App=EntityFramework&quot;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\matth\\Documents\\FYPRepo\\MapTest\\MapTest\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='FYPracticeEntities']/@connectionString" />
+  </parameter>
+</parameters>

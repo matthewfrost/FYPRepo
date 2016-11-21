@@ -1,6 +1,6 @@
 ﻿var Map = $.extend(true, {}, Map, {
     Controller: {
-        url: 'MapTest/api/Location',
+        url: '/api/Location',
         save: function (options) {
             $.ajax({
                 url: Map.Controller.url,

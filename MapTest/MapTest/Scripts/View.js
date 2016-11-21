@@ -1,4 +1,4 @@
-﻿var overlay, ViewModel;
+﻿var overlay, ViewModel, markers, tempMarker;
 var Map = $.extend(true, {}, Map, {
     View: {
         locations: [],
@@ -7,32 +7,31 @@ var Map = $.extend(true, {}, Map, {
         currentLat: 0,
         currentLong: 0,
         placeMarker: function (location, map, event) {
-
             ViewModel.locations.push(location);
-            var markers = ViewModel.locations.map(function (location, i) {
+            markers = ViewModel.locations.map(function (location, i) {
                 var marker = new google.maps.Marker({
                     position: location
                 });
-
+                tempMarker = marker;
                 google.maps.event.addListener(marker, "click", function (event) {
                     debugger;
                     ViewModel.selectedLocation(ViewModel.locationDetails()[i]);
                     var projection = overlay.getProjection();
                     var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
                     $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
+                    $('.cancelbtn').on('click', Map.View.closeDialog);
                 });
-
+                
                 return marker;
             });
 
             ViewModel.currentLat = location.lat();
             ViewModel.currentLong = location.lng();
             $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
+            $('.cancelbtn').on('click', Map.View.closeDialog);
 
             var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
-
-
         },
 
         saveLocation: function () {
@@ -40,8 +39,9 @@ var Map = $.extend(true, {}, Map, {
             Location = new Map.Model.Location();
             Location.Name($('#locationName').val());
             Location.Tag($('#locationTag').val());
-            ViewModel.Latitude(ViewModel.currentLat);
-            ViewModel.Longitude(ViewModel.currentLong);
+            Location.Latitude(ViewModel.currentLat);
+            Location.Longitude(ViewModel.currentLong);
+            tempMarker = null;
 
             Map.Controller.save({
                 data: JSON.stringify(ko.mapping.toJS(Location)),
@@ -58,9 +58,12 @@ var Map = $.extend(true, {}, Map, {
             }
         },
 
-        closeDialog: function () {
+        closeDialog: function (marker) {
             debugger;
             $('#locationCard').css('display', 'none')
+            if (tempMarker) {
+                markers[markers.length - 1].setMap(null);
+            }
         }
     }
 });
@@ -78,7 +81,9 @@ function initMap() {
 
     map.addListener('dblclick', function (e) {
         Map.View.placeMarker(e.latLng, map, e);
-        return false;
+        debugger;
+        $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', e.pixel.x + 'px').css('top', e.pixel.y + 'px');
+        $('.cancelbtn').on('click', Map.View.closeDialog);
     });
 
     Map.Controller.get({
@@ -98,7 +103,7 @@ function initMap() {
             ViewModel.locationDetails().push(Location);
         }
 
-        var markers = ViewModel.locations.map(function (location, i) {
+        markers = ViewModel.locations.map(function (location, i) {
             var marker = new google.maps.Marker({
                 position: location
             });
@@ -109,7 +114,8 @@ function initMap() {
                 var projection = overlay.getProjection();
                 var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
                 $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
-                return false;
+                $('.cancelbtn').on('click', Map.View.closeDialog);
+               // return false;
             });
 
             return marker;

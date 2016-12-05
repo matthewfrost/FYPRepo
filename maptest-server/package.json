@@ -1,0 +1,11 @@
+{
+  "name": "maptest",
+  "version": "1.0.0",
+  "description": "node js server for map admin tool",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Frost",
+  "license": "ISC"
+}

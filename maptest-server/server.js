@@ -3,12 +3,13 @@ var Tag = require("./tag.js");
 var express = require('express');
 var app = express();
 var json = [];
+
 var config = {
-    userName: 'MatthewDev',
-    password: 'Elliot1995',
-    server: '192.168.1.77',
+    userName: 'FYPracticeDev',
+    password: 'password',
+    server: '192.168.56.1',
     
-    options: {database: 'FYPractice', rowCollectionOnRequestCompletion: true}
+    options: {port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true}
   };
 
   var connection = new Connection(config);
@@ -16,13 +17,18 @@ var config = {
   var Request = require('tedious').Request;
 
   connection.on('connect', function(err) {
-    // If no error, then good to go...
         console.log("connected");
-        //executeQuery();
     }
   );
 
-  app.get('/getAll', function (req, res){
+  app.all('*', function (req, res, next) {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type');
+      next();
+  });
+
+  app.get('/getAll', function (req, res) {
       request = new Request("select * from Location", function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -33,11 +39,11 @@ var config = {
                 json.push(tag);
           });
           res.json(json);
+          json = [];
       }
       
     });
-    connection.execSql(request);
-      
+    connection.execSql(request);     
   });
 
   app.listen(process.env.PORT || '8081');

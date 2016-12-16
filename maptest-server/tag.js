@@ -4,8 +4,8 @@ function Tag(ID, Name, TagName, Lat, Long){
     this.ID = ID;
     this.Name = Name;
     this.TagName = TagName;
-    this.Lat = Lat;
-    this.Long = Long;
+    this.Latitude = Lat;
+    this.Longitude = Long;
 }
 
 method.getName = function(){

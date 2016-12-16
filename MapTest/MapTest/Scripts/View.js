@@ -92,14 +92,15 @@ function initMap() {
 
     function success(data, status, jqxhr) {
         var Location, marker;
+        debugger;
         ViewModel = new Map.ViewModel.Index();
         for (var i = 0; i < data.length; i++) {
             ViewModel.locations.push({ lat: data[i].Latitude, lng: data[i].Longitude });
             Location = new Map.Model.Location();
             Location.Name(data[i].Name);
             Location.Tag(data[i].Tag);
-            Location.Latitude(data[i].Latitude);
-            Location.Longitude(data[i].Longitude);
+            Location.Latitude(data[i].Lat);
+            Location.Longitude(data[i].Long);
             ViewModel.locationDetails().push(Location);
         }
 

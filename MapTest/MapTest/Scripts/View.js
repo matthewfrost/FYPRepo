@@ -95,12 +95,12 @@ function initMap() {
         debugger;
         ViewModel = new Map.ViewModel.Index();
         for (var i = 0; i < data.length; i++) {
-            ViewModel.locations.push({ lat: data[i].Latitude, lng: data[i].Longitude });
+            ViewModel.locations.push({ lat: parseFloat(data[i].Latitude), lng: parseFloat(data[i].Longitude) });
             Location = new Map.Model.Location();
             Location.Name(data[i].Name);
-            Location.Tag(data[i].Tag);
-            Location.Latitude(data[i].Lat);
-            Location.Longitude(data[i].Long);
+            Location.Tag(data[i].TagName);
+            Location.Latitude(parseFloat(data[i].Latitude));
+            Location.Longitude(parseFloat(data[i].Longitude));
             ViewModel.locationDetails().push(Location);
         }
 

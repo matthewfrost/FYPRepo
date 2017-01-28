@@ -2,6 +2,12 @@ var Connection = require('tedious').Connection;
 var Tag = require("./tag.js");
 var express = require('express');
 var app = express();
+var parser = require('body-parser');
+var types = require('tedious').TYPES;
+app.use(parser.urlencoded({
+    extended: true
+}));
+app.use(parser.json());
 var json = [];
 
 //SQL config
@@ -83,10 +89,24 @@ app.get('/getAll', function (req, res) {
     connection.execSql(request);
 });
 
-app.post('/submit', function (req, res) {
+var createTag = function (item) {
+    var sql = 'dbo.Location_Insert';
+    var request = new Request(sql, function (err) {
+
+    });
+
+    request.addParameter('Name', types.VarChar, item.Name);
+    request.addParameter('TagName', types.VarChar, item.Tag);
+    request.addParameter('Latitude', types.Float, item.Latitude);
+    request.addParameter('Longitude', types.Float, item.Longitude);
+    debugger;
+    connection.callProcedure(request);
+}
+
+app.post('/submit', function (req, res) {    
     var item = req.body;
 
-    createTag(item, mongo);
+    createTag(item);
 });
 
 app.listen(process.env.PORT || '8081');

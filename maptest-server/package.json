@@ -9,6 +9,7 @@
   "author": "Matthew Frost",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.16.0",
     "mongodb": "^2.2.16"
   }
 }

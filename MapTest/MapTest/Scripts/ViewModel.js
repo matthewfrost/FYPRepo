@@ -9,6 +9,11 @@
             self.newLocation = ko.observable(true);
             self.currentLat = 0;
             self.currentLong = 0;
+            self.locationIndex = ko.observable(null);
+
+            self.deleteLocation = function () {
+                
+            }
         }
     }
 });

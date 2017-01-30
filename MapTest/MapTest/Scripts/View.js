@@ -1,24 +1,17 @@
-﻿var overlay, ViewModel, markers, tempMarker;
+﻿var overlay, ViewModel, markers, tempMarker, locationIndex;
 var Map = $.extend(true, {}, Map, {
     View: {
-        locations: [],
-        locationDetails: ko.observableArray([]),
-        selectedLocation: ko.observable(null),
-        newLocation: ko.observable(null),
-        currentLat: 0,
-        currentLong: 0,
-        newLocation: ko.observable(true),
         placeMarker: function (location, map, event) {
             var cardViewModel;
             ViewModel.newLocation(true);
-            ViewModel.locations.push(location);
+            ViewModel.locations.push({lat: location.lat(), lng: location.lng()});
             markers = ViewModel.locations.map(function (location, i) {
                 var marker = new google.maps.Marker({
                     position: location
                 });
                 tempMarker = marker;
+                debugger;
                 google.maps.event.addListener(marker, "click", function (event) {
-                    debugger;
                     ViewModel.selectedLocation(ViewModel.locationDetails()[i]);
                     var projection = overlay.getProjection();
                     var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
@@ -31,8 +24,12 @@ var Map = $.extend(true, {}, Map, {
 
             ViewModel.currentLat = location.lat();
             ViewModel.currentLong = location.lng();
+            ViewModel.selectedLocation(new Map.Model.Location());
+            ViewModel.selectedLocation().Latitude(location.lat());
+            ViewModel.selectedLocation().Longitude(location.lng());
             $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
             $('.cancelbtn').on('click', Map.View.closeDialog);
+            $('.savebtn').on('click', Map.View.saveLocation);
 
             var markerCluster = new MarkerClusterer(map, markers,
               { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
@@ -41,10 +38,16 @@ var Map = $.extend(true, {}, Map, {
         saveLocation: function () {
             var Name, Tag, Location
             Location = new Map.Model.Location();
+            if (ViewModel.selectedLocation().ID() == null) {
+                Location.ID(null);
+            }
+            else {
+                Location.ID(ViewModel.selectedLocation().ID());
+            }
             Location.Name($('#locationName').val());
             Location.Tag($('#locationTag').val());
-            Location.Latitude(ViewModel.currentLat);
-            Location.Longitude(ViewModel.currentLong);
+            Location.Latitude(ViewModel.selectedLocation().Latitude());
+            Location.Longitude(ViewModel.selectedLocation().Longitude());
             tempMarker = null;
 
             Map.Controller.save({
@@ -57,22 +60,12 @@ var Map = $.extend(true, {}, Map, {
                 $('#locationTag').val('');
                 $('#locationName').val('');
                 ViewModel.locationDetails().push(Location);
-
-
+                Map.View.closeDialog();
             }
         },
 
-        deleteLocation: function(){
-            var ID;
-            ID = ko.mapping.toJS(ViewModel.selectedLocation().ID())
-            Map.Controller.delete({
-                data: '{"data": ' + ID + '}',
-                success: success
-            });
-
-            function success(data, status, jqxhr) {
-                console.log("done");
-            }
+        showDeleteDialog: function(){
+            Map.View.showOverlay();
         },
 
         closeDialog: function (marker) {
@@ -81,7 +74,37 @@ var Map = $.extend(true, {}, Map, {
             if (tempMarker) {
                 markers[markers.length - 1].setMap(null);
             }
+        },
+
+        showOverlay: function () {
+            $('#overlay').css('z-index', 10);
+            $('#deleteDialog').css('display', 'block');
+            $('#closeDelete').on('click', Map.View.removeDeleteDialog);
+            $('#deleteLocation').on('click', Map.View.deleteLocation);
+        },
+
+        removeDeleteDialog: function () {
+            $('#deleteDialog').css('display', 'none');
+            $('#overlay').css('z-index', -5);
+        },
+
+        deleteLocation: function () {
+            var ID;
+            ID = ko.mapping.toJS(ViewModel.selectedLocation().ID())
+            Map.Controller.delete({
+                data: '{"data": ' + ID + '}',
+                success: success
+            });
+
+            function success(data, status, jqxhr) {
+                Map.View.showOverlay();
+                ViewModel.locations = ViewModel.locations.splice(locationIndex, 1);
+                markers[locationIndex].setMap(null);
+                Map.View.removeDeleteDialog();
+                Map.View.closeDialog();
+            }
         }
+
     }
 });
 
@@ -100,7 +123,7 @@ function initMap() {
         Map.View.placeMarker(e.latLng, map, e);
         debugger;
         $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', e.pixel.x + 'px').css('top', e.pixel.y + 'px');
-        $('.cancelbtn').on('click', Map.View.closeDialog);
+        $('#closeLocation').on('click', Map.View.closeDialog);
     });
 
     Map.Controller.get({
@@ -130,10 +153,13 @@ function initMap() {
             google.maps.event.addListener(marker, "click", function (event, data) {
                 ViewModel.newLocation(false);
                 ViewModel.selectedLocation(ViewModel.locationDetails()[i]);
+                locationIndex = i;
                 var projection = overlay.getProjection();
                 var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
                 $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
                 $('.cancelbtn').on('click', Map.View.closeDialog);
+                $('.deletebtn').on('click', Map.View.showDeleteDialog);
+                $('.savebtn').on('click', Map.View.saveLocation);
                // return false;
             });
 
@@ -149,7 +175,5 @@ function initMap() {
 
 $(function () {
     $('.savebtn').on('click', Map.View.saveLocation);
-    $('.cancelbtn').on('click', Map.View.closeDialog);
-    $('.deletebtn').on('click', Map.View.deleteLocation);
-    
+    $('.cancelbtn').on('click', Map.View.closeDialog);   
 });

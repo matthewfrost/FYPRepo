@@ -1,38 +1,62 @@
 ﻿
 
 #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-html, body {
-height: 100%;
-margin: 0;
-padding: 0;
+    position: absolute !important;
+    min-height: 100%;
+    min-width: 100%;
 }
 
-.card{
+#overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    min-height: 100%;
+    min-width: 100%;
+    z-index: -5;
+    background-color: rgba(105,106,109, 0.3);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    position: relative;
+    min-height: 100%;
+}
+
+.deleteDialog {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    z-index: 20;
+}
+
+.card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     background-color: whitesmoke;
 }
 
-.savebtn{
+.savebtn {
     background-color: #2ecc71;
     color: whitesmoke;
     border-radius: 2px;
     border: none !important;
 }
 
-.cancelbtn{
+.cancelbtn {
     background-color: #c0392b;
     color: whitesmoke;
     border-radius: 2px;
     border: none !important;
 }
 
-.savebtn:hover{
+.savebtn:hover {
     background-color: #27ae60;
 }
 
-.cardRow{
+.cardRow {
     padding-bottom: 5px;
 }

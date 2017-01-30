@@ -22,7 +22,10 @@
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAncLbEmMj9HHh2LCJXUFcYJ4F1BRENp4g&callback=initMap">
     </script>
-    <div id="map"></div>
+    <div class="wrapper">
+        <div id="map"></div>
+        <div id="overlay"></div>
+    </div>
     <div id="locationCard" data-bind="with: selectedLocation" class="card container" style="display: none">
         <div class="row cardRow">
             <label class="col-xs-4" for="locationName">Name</label>
@@ -42,8 +45,19 @@
                 <button class="col-xs-2 deletebtn">Delete</button>
                 <div class="col-xs-2"></div>
             <!--/ko-->
-            <button class="cancelbtn col-xs-3">Cancel</button>
+            <button id="closeLocation" class="cancelbtn col-xs-3">Cancel</button>
         </div>
     </div>
+    <div id="deleteDialog" class="card container deleteDialog" style="display: none">
+        <div class="row cardRow">
+            <span class="col-xs-12">Are you sure you want to delete this Location?</span>
+        </div>
+        <div class="row cardRow">
+            <button id="deleteLocation" class="col-xs-3 savebtn">Yes</button>
+            <div class="col-xs-6"></div>
+            <button id="closeDelete" class="col-xs-3 cancelbtn">No</button>
+        </div>
+    </div>
+    
 </body>
 </html>

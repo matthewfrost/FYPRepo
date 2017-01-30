@@ -21,7 +21,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: 'password',
-    server: '152.105.98.161',
+    server: '192.168.1.73',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -90,17 +90,19 @@ app.get('/getAll', function (req, res) {
 });
 
 var createTag = function (item) {
-    var sql = 'dbo.Location_Insert';
+    var sql = 'dbo.Location_Merge';
     var request = new Request(sql, function (err) {
 
     });
 
+    request.addParameter('ID', types.Int, item.ID);
     request.addParameter('Name', types.VarChar, item.Name);
     request.addParameter('TagName', types.VarChar, item.Tag);
     request.addParameter('Latitude', types.Float, item.Latitude);
     request.addParameter('Longitude', types.Float, item.Longitude);
     debugger;
     connection.callProcedure(request);
+    
 }
 
 var deleteTag = function (id) {
@@ -120,6 +122,7 @@ app.put('/delete', function (req, res) {
     id = req.body;
 
     deleteTag(id.data);
+    res.sendStatus(200);
 });
 
 app.post('/submit', function (req, res) {    
@@ -127,6 +130,7 @@ app.post('/submit', function (req, res) {
     item = req.body;
 
     createTag(item);
+    res.sendStatus(200);
 });
 
 app.listen(process.env.PORT || '8081');

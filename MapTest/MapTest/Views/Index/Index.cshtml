@@ -34,7 +34,15 @@
         </div>
         <div class="row">
             <button class="col-xs-3 savebtn">Save</button>
-            <button class="cancelbtn col-xs-push-3 col-xs-3">Cancel</button>
+            <!--ko if: $root.newLocation() == true-->
+                <div class="col-xs-6"></div>
+            <!--/ko-->
+            <!--ko if: $root.newLocation() == false-->
+                <div class="col-xs-2"></div>
+                <button class="col-xs-2 deletebtn">Delete</button>
+                <div class="col-xs-2"></div>
+            <!--/ko-->
+            <button class="cancelbtn col-xs-3">Cancel</button>
         </div>
     </div>
 </body>

@@ -4,6 +4,13 @@ var express = require('express');
 var app = express();
 var parser = require('body-parser');
 var types = require('tedious').TYPES;
+app.all('*', function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 app.use(parser.urlencoded({
     extended: true
 }));
@@ -14,7 +21,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: 'password',
-    server: '192.168.1.73',
+    server: '152.105.98.161',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -63,15 +70,8 @@ connection.on('connect', function (err) {
 //    });
 //}
 
-app.all('*', function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
-
 app.get('/getAll', function (req, res) {
-    request = new Request("select * from Location", function (err, rowCount, rows) {
+    request = new Request("select * from Location where DeletedOn is null", function (err, rowCount, rows) {
         if (err) {
             console.log(err);
         } else {
@@ -103,8 +103,28 @@ var createTag = function (item) {
     connection.callProcedure(request);
 }
 
+var deleteTag = function (id) {
+    var sql = 'dbo.Location_Delete';
+    debugger;
+    var request = new Request(sql, function (err) {
+
+    });
+
+    request.addParameter('ID', types.Int, id);
+    connection.callProcedure(request);
+}
+
+app.put('/delete', function (req, res) {
+    var id;
+    debugger;
+    id = req.body;
+
+    deleteTag(id.data);
+});
+
 app.post('/submit', function (req, res) {    
-    var item = req.body;
+    var item;
+    item = req.body;
 
     createTag(item);
 });

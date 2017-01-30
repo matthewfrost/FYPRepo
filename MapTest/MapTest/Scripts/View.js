@@ -4,9 +4,13 @@ var Map = $.extend(true, {}, Map, {
         locations: [],
         locationDetails: ko.observableArray([]),
         selectedLocation: ko.observable(null),
+        newLocation: ko.observable(null),
         currentLat: 0,
         currentLong: 0,
+        newLocation: ko.observable(true),
         placeMarker: function (location, map, event) {
+            var cardViewModel;
+            ViewModel.newLocation(true);
             ViewModel.locations.push(location);
             markers = ViewModel.locations.map(function (location, i) {
                 var marker = new google.maps.Marker({
@@ -58,6 +62,19 @@ var Map = $.extend(true, {}, Map, {
             }
         },
 
+        deleteLocation: function(){
+            var ID;
+            ID = ko.mapping.toJS(ViewModel.selectedLocation().ID())
+            Map.Controller.delete({
+                data: '{"data": ' + ID + '}',
+                success: success
+            });
+
+            function success(data, status, jqxhr) {
+                console.log("done");
+            }
+        },
+
         closeDialog: function (marker) {
             debugger;
             $('#locationCard').css('display', 'none')
@@ -97,6 +114,7 @@ function initMap() {
         for (var i = 0; i < data.length; i++) {
             ViewModel.locations.push({ lat: parseFloat(data[i].Latitude), lng: parseFloat(data[i].Longitude) });
             Location = new Map.Model.Location();
+            Location.ID(data[i].ID);
             Location.Name(data[i].Name);
             Location.Tag(data[i].TagName);
             Location.Latitude(parseFloat(data[i].Latitude));
@@ -110,8 +128,8 @@ function initMap() {
             });
 
             google.maps.event.addListener(marker, "click", function (event, data) {
+                ViewModel.newLocation(false);
                 ViewModel.selectedLocation(ViewModel.locationDetails()[i]);
-                debugger;
                 var projection = overlay.getProjection();
                 var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
                 $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
@@ -132,5 +150,6 @@ function initMap() {
 $(function () {
     $('.savebtn').on('click', Map.View.saveLocation);
     $('.cancelbtn').on('click', Map.View.closeDialog);
+    $('.deletebtn').on('click', Map.View.deleteLocation);
     
 });

@@ -6,6 +6,7 @@
             self.locations = [];
             self.locationDetails = ko.observableArray([]);
             self.selectedLocation = ko.observable({});
+            self.newLocation = ko.observable(true);
             self.currentLat = 0;
             self.currentLong = 0;
         }

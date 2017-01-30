@@ -19,6 +19,16 @@
                 success: options.success,
                 contentType: 'application/json'
             });
+        },
+
+        delete: function (options) {
+            $.ajax({
+                url: Map.Controller.url + '/delete',
+                type: 'PUT',
+                success: options.success,
+                contentType: 'application/json',
+                data: options.data
+            });
         }
     }
 });

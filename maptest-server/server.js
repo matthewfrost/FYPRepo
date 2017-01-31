@@ -21,7 +21,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: 'password',
-    server: '192.168.1.73',
+    server: '152.105.197.103',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -89,21 +89,8 @@ app.get('/getAll', function (req, res) {
     connection.execSql(request);
 });
 
-var createTag = function (item) {
-    var sql = 'dbo.Location_Merge';
-    var request = new Request(sql, function (err) {
 
-    });
-
-    request.addParameter('ID', types.Int, item.ID);
-    request.addParameter('Name', types.VarChar, item.Name);
-    request.addParameter('TagName', types.VarChar, item.Tag);
-    request.addParameter('Latitude', types.Float, item.Latitude);
-    request.addParameter('Longitude', types.Float, item.Longitude);
-    debugger;
-    connection.callProcedure(request);
     
-}
 
 var deleteTag = function (id) {
     var sql = 'dbo.Location_Delete';
@@ -129,8 +116,34 @@ app.post('/submit', function (req, res) {
     var item;
     item = req.body;
 
+    var createTag = function (item) {
+        var sql = 'dbo.Location_Merge';
+        var request = new Request(sql, function (err, rowCount, rows) {
+            debugger;
+            var item = rows[0];
+
+            res.json(item[0].value);
+        });
+
+        request.addParameter('ID', types.Int, item.ID);
+        request.addParameter('Name', types.VarChar, item.Name);
+        request.addParameter('TagName', types.VarChar, item.Tag);
+        request.addParameter('Latitude', types.Float, item.Latitude);
+        request.addParameter('Longitude', types.Float, item.Longitude);
+        //request.addOutputParameter('ID', types.Int);
+
+        request.on('returnValue', function (parameterName, value, metadata) {
+            debugger;
+            res.json["{'ID': " + value + "}"];
+        });
+
+        connection.callProcedure(request);
+    }
+
     createTag(item);
-    res.sendStatus(200);
+
+
+    //res.sendStatus(200);
 });
 
 app.listen(process.env.PORT || '8081');

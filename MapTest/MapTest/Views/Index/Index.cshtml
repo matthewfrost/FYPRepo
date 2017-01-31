@@ -10,6 +10,8 @@
     <title></title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/libs")
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
 </head>
 <body>
     <script src="~/Scripts/LocationModel.js"></script>
@@ -29,23 +31,20 @@
     <div id="locationCard" data-bind="with: selectedLocation" class="card container" style="display: none">
         <div class="row cardRow">
             <label class="col-xs-4" for="locationName">Name</label>
-            <input data-bind="value: Name" class="col-xs-6" id="locationName" type="text" />
+            <input data-bind="value: Name" class="col-xs-4" id="locationName" type="text" />
+            <div class="col-xs-2"></div>
+            <i id ="cancelbtn" class="col-xs-1 material-icons">cancel</i>
         </div>
         <div class="row cardRow">
             <label class="col-xs-4" for="locationTag">Tag Name</label>
-            <input data-bind="value:Tag" class="col-xs-6" id="locationTag" type="text" />
+            <input data-bind="value:Tag" class="col-xs-4" id="locationTag" type="text" />
         </div>
         <div class="row">
-            <button class="col-xs-3 savebtn">Save</button>
-            <!--ko if: $root.newLocation() == true-->
-                <div class="col-xs-6"></div>
-            <!--/ko-->
+            <button id="savebtn" class="col-xs-3 savebtn">Save</button>
             <!--ko if: $root.newLocation() == false-->
-                <div class="col-xs-2"></div>
-                <button class="col-xs-2 deletebtn">Delete</button>
-                <div class="col-xs-2"></div>
+                <div class="col-xs-6"></div>
+                <button id="deletebtn" class="col-xs-3 deletebtn">Delete</button>
             <!--/ko-->
-            <button id="closeLocation" class="cancelbtn col-xs-3">Cancel</button>
         </div>
     </div>
     <div id="deleteDialog" class="card container deleteDialog" style="display: none">
@@ -53,9 +52,9 @@
             <span class="col-xs-12">Are you sure you want to delete this Location?</span>
         </div>
         <div class="row cardRow">
-            <button id="deleteLocation" class="col-xs-3 savebtn">Yes</button>
+            <button id="deleteLocation" class="col-xs-3">Yes</button>
             <div class="col-xs-6"></div>
-            <button id="closeDelete" class="col-xs-3 cancelbtn">No</button>
+            <button id="closeDelete" class="col-xs-3 deletebtn">No</button>
         </div>
     </div>
     

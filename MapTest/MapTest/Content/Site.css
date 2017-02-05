@@ -52,6 +52,10 @@ html, body {
     border: none !important;
 }
 
+.savebtn:hover {
+    background-color: #27ae60;
+}
+
 .deletebtn {
     background-color: #c0392b;
     color: whitesmoke;
@@ -59,9 +63,11 @@ html, body {
     border: none !important;
 }
 
-.savebtn:hover {
-    background-color: #27ae60;
+.deletebtn:hover{
+    background-color: #ab3326;
 }
+
+
 
 .cardRow {
     padding-bottom: 5px;

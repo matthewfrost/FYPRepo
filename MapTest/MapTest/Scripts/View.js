@@ -195,4 +195,11 @@ function initMap() {
 $(function () {
     $('#savebtn').on('click', Map.View.saveLocation);
     $('#cancelbtn').on('click', Map.View.closeDialog);
+    $.toast({
+        text: '<ul><li>Double click to add a point</li><li>Click on a point to view and edit info</li></ul>',
+        showHideTransition: 'Fade',
+        bgColor: '#42a5ce',
+        textColor: '#eee',
+        hideAfter: 10000
+    });
 });

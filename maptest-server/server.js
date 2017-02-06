@@ -1,4 +1,5 @@
 var Connection = require('tedious').Connection;
+var Request = require('tedious').Request;
 var Tag = require("./tag.js");
 var express = require('express');
 var app = express();
@@ -28,13 +29,9 @@ var config = {
 
 var connection = new Connection(config);
 
-
-var Request = require('tedious').Request;
-
 connection.on('connect', function (err) {
     console.log("connected");
-}
-);
+});
 
 //Mongo config
 //var MongoClient = require('mongodb').MongoClient;
@@ -89,9 +86,6 @@ app.get('/getAll', function (req, res) {
     connection.execSql(request);
 });
 
-
-    
-
 var deleteTag = function (id) {
     var sql = 'dbo.Location_Delete';
     debugger;
@@ -119,7 +113,6 @@ app.post('/submit', function (req, res) {
     var createTag = function (item) {
         var sql = 'dbo.Location_Merge';
         var request = new Request(sql, function (err, rowCount, rows) {
-            debugger;
             var item = rows[0];
 
             res.json(item[0].value);
@@ -133,7 +126,6 @@ app.post('/submit', function (req, res) {
         //request.addOutputParameter('ID', types.Int);
 
         request.on('returnValue', function (parameterName, value, metadata) {
-            debugger;
             res.json["{'ID': " + value + "}"];
         });
 

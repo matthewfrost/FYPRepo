@@ -47,9 +47,13 @@ var Map = $.extend(true, {}, Map, {
             else {
                 Location.ID(ViewModel.selectedLocation().ID());
             }
-            if ((ViewModel.selectedLocation().Name() !== null && ViewModel.selectedLocation().Name().trim() !== "") && (ViewModel.selectedLocation().Tag() !== null && ViewModel.selectedLocation().Tag().trim() !== "")) {
-                Location.Name(ViewModel.selectedLocation().Name());
-                Location.Tag(ViewModel.selectedLocation().Tag());
+            //if ((ViewModel.selectedLocation().LocationName() !== null && ViewModel.selectedLocation().LocationName().trim() !== "") && (ViewModel.selectedLocation().Tag() !== null && ViewModel.selectedLocation().Tag().trim() !== "")) {
+            //To do - validation
+                Location.LocationName(ViewModel.selectedLocation().LocationName());
+                Location.Database(ViewModel.database());
+                Location.Table(ViewModel.table());
+                Location.Column(ViewModel.Column.Name());
+                Location.ColumnValue(ViewModel.value());
 
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
                 Location.Longitude(ViewModel.selectedLocation().Longitude());
@@ -68,7 +72,7 @@ var Map = $.extend(true, {}, Map, {
                     ViewModel.locationDetails().push(Location);
                     Map.View.closeDialog();
                 }
-            }
+          //  }
         },
 
         showDeleteDialog: function () {
@@ -152,12 +156,16 @@ function initMap() {
     function success(data, status, jqxhr) {
         var Location, marker;
         ViewModel = new Map.ViewModel.Index();
+        debugger;
         for (var i = 0; i < data.length; i++) {
             ViewModel.locations.push({ lat: parseFloat(data[i].Latitude), lng: parseFloat(data[i].Longitude) });
             Location = new Map.Model.Location();
             Location.ID(data[i].ID);
-            Location.Name(data[i].Name);
-            Location.Tag(data[i].TagName);
+            Location.LocationName(data[i].Name);
+            Location.ColumnValue(data[i].ValueName);
+            Location.Database(data[i].Database);
+            Location.Table(data[i].Table);
+            Location.Column(data[i].Column);
             Location.Latitude(parseFloat(data[i].Latitude));
             Location.Longitude(parseFloat(data[i].Longitude));
             ViewModel.locationDetails().push(Location);

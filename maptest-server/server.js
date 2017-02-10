@@ -33,6 +33,38 @@ connection.on('connect', function (err) {
     console.log("connected");
 });
 
+app.get('/getSchema', function (req, res) {
+    debugger;
+    var db, table;
+    var data = req.query;
+
+    db = data.database;
+    table = data.table;
+    var sql = 'dbo.TableSchema_Get'
+
+    request = new Request(sql, function (err, rowCount, rows) {
+        if (err) {
+            console.log(err);
+        } else {
+            var rowArray = [];
+            rows.forEach(function (columns) {
+                //var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value);
+                json.push({
+                    columnName: columns[0].value
+                });
+            });
+            console.log("here")
+            res.json(json);
+            json = [];
+        }
+
+    });
+    request.addParameter('Database', types.VarChar, db);
+    request.addParameter('Table', types.VarChar, table);
+    connection.callProcedure(request);
+
+});
+
 //Mongo config
 //var MongoClient = require('mongodb').MongoClient;
 //var assert = require('assert')
@@ -74,7 +106,7 @@ app.get('/getAll', function (req, res) {
         } else {
             var rowArray = [];
             rows.forEach(function (columns) {
-                var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value);
+                var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value, columns[5].value, columns[6].value, columns[7].value);
                 json.push(tag);
             });
             console.log("here")
@@ -119,8 +151,11 @@ app.post('/submit', function (req, res) {
         });
 
         request.addParameter('ID', types.Int, item.ID);
-        request.addParameter('Name', types.VarChar, item.Name);
-        request.addParameter('TagName', types.VarChar, item.Tag);
+        request.addParameter('Name', types.VarChar, item.LocationName);
+        request.addParameter('ValueName', types.VarChar, item.ColumnValue);
+        request.addParameter('Database', types.VarChar, item.Database);
+        request.addParameter('Table', types.VarChar, item.Table);
+        request.addParameter('Column', types.VarChar, item.Column);
         request.addParameter('Latitude', types.Float, item.Latitude);
         request.addParameter('Longitude', types.Float, item.Longitude);
         //request.addOutputParameter('ID', types.Int);

@@ -29,6 +29,16 @@
                 contentType: 'application/json',
                 data: options.data
             });
+        },
+
+        getSchema: function (options) {
+            $.ajax({
+                url: Map.Controller.url + '/getSchema?database=' + options.database + '&table=' + options.table,
+                type: 'GET',
+                success: options.success,
+                contentType: 'application/json',
+               // data: options.data
+            });
         }
     }
 });

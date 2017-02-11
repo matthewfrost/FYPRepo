@@ -34,7 +34,6 @@ connection.on('connect', function (err) {
 });
 
 app.get('/getSchema', function (req, res) {
-    debugger;
     var db, table;
     var data = req.query;
 

@@ -14,6 +14,7 @@
             self.table = ko.observable(null);
             self.column = ko.observable(null);
             self.value = ko.observable(null);
+            self.selectedValue = ko.observable(null);
             self.tableColumns = ko.observableArray([]);
 
             self.deleteLocation = function () {
@@ -21,14 +22,9 @@
             }
 
             self.getSchema = function () {
-                var data = {
-                    database: ko.mapping.toJS(self.database()),
-                    table: ko.mapping.toJS(self.table())
-                }
-
                 Map.Controller.getSchema({
-                    database: ko.mapping.toJS(self.database()),
-                    table: ko.mapping.toJS(self.table()),
+                    database: ko.mapping.toJS(self.selectedLocation().Database()),
+                    table: ko.mapping.toJS(self.selectedLocation().Table()),
                     success: success
                 });
 
@@ -40,6 +36,8 @@
                         column.Name(current.columnName);
                         self.tableColumns.push(column);
                     }
+                    debugger;
+                    self.selectedValue(self.selectedLocation().Column());
                 }
             }
         }

@@ -35,20 +35,20 @@
         </div>
         <div class="row cardRow">
             <label class="col-xs-4" for="locationTag">Database Name</label>
-            <input data-bind="value:$root.database" class="col-xs-4" id="database" type="text" />
+            <input data-bind="value:$data.Database" class="col-xs-4" id="database" type="text" />
         </div>
         <div class="row cardRow">
             <label class="col-xs-4" for="locationTag">Table Name</label>
-            <input data-bind="value:$root.table, event:{change: $root.getSchema}" class="col-xs-4" id="table" type="text" />
+            <input data-bind="value:$data.Table, event:{change: $root.getSchema}" class="col-xs-4" id="table" type="text" />
         </div>
         <!--ko if: $root.tableColumns().length > 0-->
         <div class="row">
             <label class="col-xs-4" for="columns">Column Name</label>
-            <select class="col-xs-6" id="columns" data-bind="options: $root.tableColumns, optionsText: 'Name', value: $root.Column, optionsCaption: 'Select Column...'"></select>
+            <select class="col-xs-6" id="columns" data-bind="options: $root.tableColumns, optionsText: 'Name', value: $root.selectedValue, optionsCaption: 'Select Column...'"></select>
         </div>
         <div class="row cardRow">
             <label class="col-xs-4" for="locationTag">Column Value</label>
-            <input data-bind="value:$root.value" class="col-xs-4" id="value" type="text" />
+            <input data-bind="value:$data.ColumnValue" class="col-xs-4" id="value" type="text" />
         </div>
         <!--/ko-->
         <div class="row">

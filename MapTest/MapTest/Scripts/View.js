@@ -30,6 +30,7 @@ var Map = $.extend(true, {}, Map, {
             ViewModel.selectedLocation(new Map.Model.Location());
             ViewModel.selectedLocation().Latitude(location.lat());
             ViewModel.selectedLocation().Longitude(location.lng());
+            ViewModel.selectedLocation()
             $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', event.pixel.x + 'px').css('top', event.pixel.y + 'px');
             $('#cancelbtn').on('click', Map.View.closeDialog);
             $('#savebtn').on('click', Map.View.saveLocation);
@@ -50,11 +51,12 @@ var Map = $.extend(true, {}, Map, {
             //if ((ViewModel.selectedLocation().LocationName() !== null && ViewModel.selectedLocation().LocationName().trim() !== "") && (ViewModel.selectedLocation().Tag() !== null && ViewModel.selectedLocation().Tag().trim() !== "")) {
             //To do - validation
                 Location.LocationName(ViewModel.selectedLocation().LocationName());
-                Location.Database(ViewModel.database());
-                Location.Table(ViewModel.table());
-                Location.Column(ViewModel.Column.Name());
-                Location.ColumnValue(ViewModel.value());
-
+                Location.Database(ViewModel.selectedLocation().Database());
+                Location.Table(ViewModel.selectedLocation().Table());
+                Location.Column(ViewModel.selectedValue().Name());
+                Location.ColumnValue(ViewModel.selectedLocation().ColumnValue());
+                debugger;
+                ViewModel.getSchema();
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
                 Location.Longitude(ViewModel.selectedLocation().Longitude());
                 tempMarker = null;
@@ -169,6 +171,7 @@ function initMap() {
             Location.Latitude(parseFloat(data[i].Latitude));
             Location.Longitude(parseFloat(data[i].Longitude));
             ViewModel.locationDetails().push(Location);
+            debugger;
         }
 
         markers = ViewModel.locations.map(function (location, i) {
@@ -181,12 +184,14 @@ function initMap() {
                 ViewModel.newLocation(false);
                 ViewModel.selectedLocation(ViewModel.locationDetails()[i]);
                 locationIndex = i;
+                ViewModel.getSchema();
                 projection = overlay.getProjection();
                 pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
                 $('#locationCard').css('display', 'block').css('position', 'absolute').css('left', pixel.x + 'px').css('top', pixel.y + 'px');
                 $('#cancelbtn').on('click', Map.View.closeDialog);
                 $('#deletebtn').on('click', Map.View.showDeleteDialog);
                 $('#savebtn').on('click', Map.View.saveLocation);
+                
                 // return false;
             });
 

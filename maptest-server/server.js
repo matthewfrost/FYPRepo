@@ -5,6 +5,7 @@ var express = require('express');
 var app = express();
 var parser = require('body-parser');
 var types = require('tedious').TYPES;
+
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
@@ -15,6 +16,7 @@ app.all('*', function (req, res, next) {
 app.use(parser.urlencoded({
     extended: true
 }));
+
 app.use(parser.json());
 var json = [];
 
@@ -119,7 +121,6 @@ app.get('/getAll', function (req, res) {
 
 var deleteTag = function (id) {
     var sql = 'dbo.Location_Delete';
-    debugger;
     var request = new Request(sql, function (err) {
 
     });
@@ -127,6 +128,52 @@ var deleteTag = function (id) {
     request.addParameter('ID', types.Int, id);
     connection.callProcedure(request);
 }
+
+app.get('/getByLocation', function (req, res) {
+    var data = req.query;
+    var latitude, longitude, posLat, posLong, negLat, negLong, earthRadius, sql;
+    var LatDiff, LongDiff
+    debugger;
+    latitude = parseFloat(data.lat);
+    longitude = parseFloat(data.long);
+    earthRadius = 6378;
+
+    posLat = latitude + (0.1 / earthRadius) * (180 / Math.PI);
+    posLong = longitude + (0.1 / earthRadius) * (180 / Math.PI) / Math.cos(latitude * Math.PI / 180);
+    negLat = latitude + (-0.100 / earthRadius) * (180 / Math.PI);
+    negLong = longitude + (-0.100 / earthRadius) * (180 / Math.PI) / Math.cos(latitude * Math.PI / 180);
+    //LatDiff = posLat - latitude;
+    //LongDiff = posLong - longitude;
+    //negLat = latitude - LatDiff;
+    //negLong = longitude - LongDiff;
+    console.log(posLat + ", " + posLong);
+    console.log(negLat + ", " + negLong);
+
+    sql = 'dbo.Location_GetByLocation';
+
+    request = new Request(sql, function (err, rowCount, rows) {
+        if (err) {
+            console.log(err);
+        } else {
+            var rowArray = [];
+            rows.forEach(function (columns) {
+                var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value, columns[5].value, columns[6].value, columns[7].value);
+                json.push(tag);
+            });
+            console.log("here")
+            res.json(json);
+            json = [];
+        }
+
+    });
+
+    request.addParameter('Latitude1', types.Float, negLat);
+    request.addParameter('Latitude2', types.Float, posLat);
+    request.addParameter('Longitude1', types.Float, negLong);
+    request.addParameter('Longitude2', types.Float, posLong);
+
+    connection.callProcedure(request);
+});
 
 app.put('/delete', function (req, res) {
     var id;
@@ -137,11 +184,12 @@ app.put('/delete', function (req, res) {
     res.sendStatus(200);
 });
 
-app.post('/submit', function (req, res) {    
+app.post('/submit', function (req, res) {
     var item;
     item = req.body;
 
     var createTag = function (item) {
+        debugger;
         var sql = 'dbo.Location_Merge';
         var request = new Request(sql, function (err, rowCount, rows) {
             var item = rows[0];

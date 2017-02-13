@@ -1,4 +1,3 @@
-var SQL = require('tedious');
 var express = require('express');
 var Connection = require('tedious').Connection;
 var Request = require('tedious').Request;
@@ -47,7 +46,7 @@ app.get('/getData', function(req,res){
 
     var query = "dbo.GetData"
 
-    request = new Request(sql, function (err, rowCount, rows) {
+    request = new Request(query, function (err, rowCount, rows) {
         if (err) {
             console.log(err);
         } else {

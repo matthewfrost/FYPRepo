@@ -36,9 +36,30 @@
                         column.Name(current.columnName);
                         self.tableColumns.push(column);
                     }
-                    debugger;
                     self.selectedValue(self.selectedLocation().Column());
                 }
+            }
+
+            self.validateViewModel = function () {
+                var valid = true;
+                debugger;
+                if (self.selectedLocation().LocationName().trim() == "" || self.selectedLocation().LocationName === null) {
+                    valid = false;
+                }
+                if (self.selectedLocation().Database().trim() == "" || self.selectedLocation().Database() === null) {
+                    valid = false;
+                }
+                if (self.selectedLocation().Table().trim() == "" || self.selectedLocation().Table() === null) {
+                    valid = false;
+                }
+                if (typeof self.selectedValue() === undefined) {
+                    valid = false;
+                }
+                if (self.selectedLocation().ColumnValue().trim() == "" || self.selectedLocation().ColumnValue() === null) {
+                    valid = false;
+                }
+
+                return valid;
             }
         }
     }

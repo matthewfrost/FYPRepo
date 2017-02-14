@@ -48,14 +48,12 @@ var Map = $.extend(true, {}, Map, {
             else {
                 Location.ID(ViewModel.selectedLocation().ID());
             }
-            //if ((ViewModel.selectedLocation().LocationName() !== null && ViewModel.selectedLocation().LocationName().trim() !== "") && (ViewModel.selectedLocation().Tag() !== null && ViewModel.selectedLocation().Tag().trim() !== "")) {
-            //To do - validation
+            if (ViewModel.validateViewModel()) {
                 Location.LocationName(ViewModel.selectedLocation().LocationName());
                 Location.Database(ViewModel.selectedLocation().Database());
                 Location.Table(ViewModel.selectedLocation().Table());
-                Location.Column(ViewModel.selectedValue().Name());
+                Location.Column(ViewModel.selectedLocation().Column());
                 Location.ColumnValue(ViewModel.selectedLocation().ColumnValue());
-                debugger;
                 ViewModel.getSchema();
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
                 Location.Longitude(ViewModel.selectedLocation().Longitude());
@@ -74,7 +72,7 @@ var Map = $.extend(true, {}, Map, {
                     ViewModel.locationDetails().push(Location);
                     Map.View.closeDialog();
                 }
-          //  }
+            }
         },
 
         showDeleteDialog: function () {
@@ -84,14 +82,13 @@ var Map = $.extend(true, {}, Map, {
         closeDialog: function (marker) {
             $('#locationCard').css('display', 'none')
             if (tempMarker) {
-                debugger;
                 var location = new google.maps.LatLng(0, 0);
                 markers[markers.length - 1].setPosition(location);
                 markers[markers.length - 1].setVisible(false);
                 markers[markers.length - 1].setMap(null);
                 markers.splice((markers.length - 1), 1);
                 ViewModel.locations.splice((markers.length - 1), 1);
-                
+
             }
         },
 
@@ -158,7 +155,7 @@ function initMap() {
     function success(data, status, jqxhr) {
         var Location, marker;
         ViewModel = new Map.ViewModel.Index();
-        debugger;
+
         for (var i = 0; i < data.length; i++) {
             ViewModel.locations.push({ lat: parseFloat(data[i].Latitude), lng: parseFloat(data[i].Longitude) });
             Location = new Map.Model.Location();
@@ -171,7 +168,6 @@ function initMap() {
             Location.Latitude(parseFloat(data[i].Latitude));
             Location.Longitude(parseFloat(data[i].Longitude));
             ViewModel.locationDetails().push(Location);
-            debugger;
         }
 
         markers = ViewModel.locations.map(function (location, i) {
@@ -191,8 +187,6 @@ function initMap() {
                 $('#cancelbtn').on('click', Map.View.closeDialog);
                 $('#deletebtn').on('click', Map.View.showDeleteDialog);
                 $('#savebtn').on('click', Map.View.saveLocation);
-                
-                // return false;
             });
 
             return marker;

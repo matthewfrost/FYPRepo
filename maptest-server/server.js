@@ -24,7 +24,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: 'password',
-    server: '192.168.1.73',
+    server: '152.105.197.159',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -133,7 +133,7 @@ app.get('/getByLocation', function (req, res) {
     var data = req.query;
     var latitude, longitude, posLat, posLong, negLat, negLong, earthRadius, sql;
     var LatDiff, LongDiff
-    debugger;
+
     latitude = parseFloat(data.lat);
     longitude = parseFloat(data.long);
     earthRadius = 6378;
@@ -142,12 +142,6 @@ app.get('/getByLocation', function (req, res) {
     posLong = longitude + (0.1 / earthRadius) * (180 / Math.PI) / Math.cos(latitude * Math.PI / 180);
     negLat = latitude + (-0.100 / earthRadius) * (180 / Math.PI);
     negLong = longitude + (-0.100 / earthRadius) * (180 / Math.PI) / Math.cos(latitude * Math.PI / 180);
-    //LatDiff = posLat - latitude;
-    //LongDiff = posLong - longitude;
-    //negLat = latitude - LatDiff;
-    //negLong = longitude - LongDiff;
-    console.log(posLat + ", " + posLong);
-    console.log(negLat + ", " + negLong);
 
     sql = 'dbo.Location_GetByLocation';
 

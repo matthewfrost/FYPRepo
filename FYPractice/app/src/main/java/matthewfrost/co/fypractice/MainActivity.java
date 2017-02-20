@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Camera.Parameters param;
         param = camera.getParameters();
         //modify parameter
-        param.setPreviewFrameRate(20);
+        //param.setPreviewFrameRate(20);
         param.setPreviewSize(width, height);
-        param.setRotation(180);
+        //param.setRotation(180);
         camera.setParameters(param);
         try {
             camera.setPreviewDisplay(mSurfaceHolder);

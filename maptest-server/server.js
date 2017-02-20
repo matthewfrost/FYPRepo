@@ -22,11 +22,11 @@ var json = [];
 
 //SQL config
 var config = {
-    userName: 'FYPracticeDev',
-    password: 'password',
-    server: '152.105.197.159',
+    userName: 'MatthewDev',
+    password: 'Elliot1995',
+    server: '192.168.1.77',
 
-    options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
+    options: { port: 1433, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
 
 var connection = new Connection(config);
@@ -112,6 +112,7 @@ app.get('/getAll', function (req, res) {
             });
             console.log("here")
             res.json(json);
+            res.sendStatus(200);
             json = [];
         }
 

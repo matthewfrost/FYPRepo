@@ -42,7 +42,7 @@
 
             self.validateViewModel = function () {
                 var valid = true;
-                debugger;
+                
                 if (self.selectedLocation().LocationName().trim() == "" || self.selectedLocation().LocationName === null) {
                     valid = false;
                 }

@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     override fun onConnected(p0: Bundle?) {
         var url = "https://httpbin.org/get"
         var queue = Volley.newRequestQueue(this)
+        queue.start()
         queue.add(JsonObjectRequest(Request.Method.GET, url, null,
                 Response.Listener<JSONObject>() {
                     @Override

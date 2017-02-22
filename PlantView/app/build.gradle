@@ -34,6 +34,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.android.volley:volley:1.0.0'
+    compile 'com.ohmerhe.kolley:kolley:0.2.0'
+    compile 'com.google.code.gson:gson:2.6.2'
+
 }
 repositories {
     mavenCentral()

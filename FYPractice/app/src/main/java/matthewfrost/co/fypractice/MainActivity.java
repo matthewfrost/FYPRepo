@@ -28,9 +28,21 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+
+import org.json.JSONArray;
 
 import java.io.Console;
 import java.security.Permission;
@@ -60,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         mSurfaceHolder.addCallback(this);
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        if(mGoogleApiClient == null){
+        if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -74,13 +86,36 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if(lastLocation != null){
-            Toast.makeText(getApplicationContext(), "Latitude: " + lastLocation.getLatitude() + ", Longitude: " + lastLocation.getLongitude(), Toast.LENGTH_LONG).show();
+        if (lastLocation != null) {
+            //Toast.makeText(getApplicationContext(), "Latitude: " + lastLocation.getLatitude() + ", Longitude: " + lastLocation.getLongitude(), Toast.LENGTH_LONG).show();
             Log.v("Latitude", lastLocation.getLatitude() + "");
             Log.v("Longitude", lastLocation.getLongitude() + "");
             Log.v("Bearing", lastLocation.getBearing() + "");
 
+            RequestQueue mRequestQueue;
+            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+            Network network = new BasicNetwork(new HurlStack());
+            mRequestQueue = new RequestQueue(cache, network);
+            String url = "http://192.168.1.77:8081/getAll";
+            mRequestQueue.start();
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                }
+            },
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            );
+
+            mRequestQueue.add(request);
+
+
         }
+
     }
 
     @Override
@@ -93,11 +128,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.v("api", "failed");
     }
 
-    private void start_camera()
-    {
-        try{
+    private void start_camera() {
+        try {
             camera = Camera.open();
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             Log.e("FYP", "init_camera: " + e);
             return;
         }
@@ -155,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onStart();
     }
 
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
     }
@@ -165,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onStop();
     }
 
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);

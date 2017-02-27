@@ -14,4 +14,13 @@
         android:id="@+id/surfaceView"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/button2"
+        android:elevation="24dp"
+        android:background="@drawable/common_google_signin_btn_icon_light_focused" />
 </RelativeLayout>

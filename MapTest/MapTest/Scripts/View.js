@@ -52,13 +52,13 @@ var Map = $.extend(true, {}, Map, {
                 Location.LocationName(ViewModel.selectedLocation().LocationName());
                 Location.Database(ViewModel.selectedLocation().Database());
                 Location.Table(ViewModel.selectedLocation().Table());
-                Location.Column(ViewModel.selectedLocation().Column());
+                Location.Column(ViewModel.selectedValue().Name());
                 Location.ColumnValue(ViewModel.selectedLocation().ColumnValue());
                 ViewModel.getSchema();
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
                 Location.Longitude(ViewModel.selectedLocation().Longitude());
                 tempMarker = null;
-
+                debugger;
                 Map.Controller.save({
                     data: JSON.stringify(ko.mapping.toJS(Location)),
                     success: success

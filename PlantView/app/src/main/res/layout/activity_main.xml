@@ -20,7 +20,30 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/button2"
-        android:elevation="24dp"
-        android:background="@drawable/common_google_signin_btn_icon_light_focused" />
+        android:id="@+id/top"
+        android:elevation="24dp" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/right" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/right"
+        android:layout_alignParentStart="true"
+        android:id="@+id/left" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/top"
+        android:id="@+id/bottom" />
 </RelativeLayout>

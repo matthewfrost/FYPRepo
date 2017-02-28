@@ -54,7 +54,8 @@ app.get('/getSchema', function (req, res) {
                     columnName: columns[0].value
                 });
             });
-            console.log("here")
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||req.socket.remoteAddress || req.connection.socket.remoteAddress;
+            console.log("here " + ip);
             res.json(json);
             json = [];
         }
@@ -117,6 +118,8 @@ app.get('/getAll', function (req, res) {
         }
 
     });
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    console.log("here " + ip);
     connection.execSql(request);
 });
 
@@ -155,7 +158,8 @@ app.get('/getByLocation', function (req, res) {
                 var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value, columns[5].value, columns[6].value, columns[7].value);
                 json.push(tag);
             });
-            console.log("here")
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+            console.log("here " + ip);
             res.json(json);
             json = [];
         }
@@ -177,6 +181,8 @@ app.put('/delete', function (req, res) {
 
     deleteTag(id.data);
     res.sendStatus(200);
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    console.log("here " + ip);
 });
 
 app.post('/submit', function (req, res) {
@@ -208,7 +214,8 @@ app.post('/submit', function (req, res) {
 
         connection.callProcedure(request);
     }
-
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    console.log("here " + ip);
     createTag(item);
 
 

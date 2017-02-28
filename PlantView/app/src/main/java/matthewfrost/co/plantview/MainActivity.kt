@@ -38,6 +38,11 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var gsensor : Sensor
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
+    var North : MutableList<Location> =  arrayListOf()
+    var East : MutableList<Location> = arrayListOf()
+    var South : MutableList<Location> = arrayListOf()
+    var West : MutableList<Location> = arrayListOf()
+    var allLocations : MutableList<Location> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +115,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://192.168.1.77:8081/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.191.85:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -129,7 +134,36 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 Response ->
                 val gson: Gson = Gson()
                 val JSONResponse = Response.toString(Charset.defaultCharset())
-                val data = gson.fromJson(JSONResponse, Array<Location>::class.java)
+                clearArrays()
+                allLocations = gson.fromJson(JSONResponse, Array<Location>::class.java).toMutableList()
+
+                for(location in allLocations){
+                    var diffLong = Math.toRadians(location.Longitude - lastLocation.longitude)
+                    var lat1 = Math.toRadians(lastLocation.latitude)
+                    var lat2 = Math.toRadians(location.Latitude.toDouble())
+                    var x = Math.sin(diffLong) * Math.cos(lat2)
+                    var y = Math.cos(lat1) * Math.sin(lat2) - (Math.sin(lat1) * Math.sin(lat2) * Math.cos(diffLong))
+                    var init_bearing = Math.atan2(x, y)
+                    init_bearing = Math.toDegrees(init_bearing)
+                    var compass_bearing = (init_bearing + 360) % 360
+
+                    if(compass_bearing >= 315 || compass_bearing < 45){
+                       North.add(location)
+                    }
+                    else if(compass_bearing >= 45 && compass_bearing < 135){
+                        East.add(location)
+                    }
+                    else if(compass_bearing >= 135 && compass_bearing < 225){
+                        South.add(location)
+                    }
+                    else {
+                        West.add(location)
+                    }
+                }
+                top.setText(North.size.toString())
+                right.setText(East.size.toString())
+                bottom.setText(South.size.toString())
+                left.setText(West.size.toString())
             }
 
             onFail {
@@ -145,5 +179,13 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     override fun onSensorChanged(event: SensorEvent) {
         Log.v("degree", compass.azimuth.toString())
+        //move ui elements around screen
+    }
+
+    fun clearArrays(){
+        North = arrayListOf()
+        East = arrayListOf()
+        South = arrayListOf()
+        West = arrayListOf()
     }
 }

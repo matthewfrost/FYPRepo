@@ -14,6 +14,7 @@ import android.view.WindowManager
 class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
 {
     public val holder : SurfaceHolder = surfaceHolder
+    lateinit var camera : Camera
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -27,8 +28,12 @@ class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
        start_camera()
     }
 
+    fun pause(){
+        camera.release()
+    }
+
     private fun start_camera() {
-        var camera : Camera = Camera.open()
+        camera = Camera.open()
 
         val param : Camera.Parameters = camera.parameters
         param.setRotation(180)

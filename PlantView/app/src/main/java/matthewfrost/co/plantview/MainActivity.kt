@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var gsensor : Sensor
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
+    lateinit var cameraSurface : CameraSurface
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
     var South : MutableList<Location> = arrayListOf()
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
         setContentView(R.layout.activity_main)
         mSurfaceHolder = surfaceView.holder
-        var cameraSurface = CameraSurface(mSurfaceHolder)
+        cameraSurface = CameraSurface(mSurfaceHolder)
         mSurfaceHolder.addCallback(cameraSurface)
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         locationRequest = LocationRequest.create()
@@ -84,6 +85,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         super.onPause()
         sensorManager.unregisterListener(this)
         compass.stop()
+        cameraSurface.pause()
     }
 
     override fun onResume(){
@@ -91,6 +93,9 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.registerListener(this, gsensor, SensorManager.SENSOR_DELAY_GAME)
         sensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME)
         compass.start()
+        mSurfaceHolder = surfaceView.holder
+        var cameraSurface = CameraSurface(mSurfaceHolder)
+        mSurfaceHolder.addCallback(cameraSurface)
     }
 
     override fun onStop(){
@@ -115,7 +120,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.191.85:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.205.119:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -138,14 +143,11 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 allLocations = gson.fromJson(JSONResponse, Array<Location>::class.java).toMutableList()
 
                 for(location in allLocations){
-                    var diffLong = Math.toRadians(location.Longitude - lastLocation.longitude)
-                    var lat1 = Math.toRadians(lastLocation.latitude)
-                    var lat2 = Math.toRadians(location.Latitude.toDouble())
-                    var x = Math.sin(diffLong) * Math.cos(lat2)
-                    var y = Math.cos(lat1) * Math.sin(lat2) - (Math.sin(lat1) * Math.sin(lat2) * Math.cos(diffLong))
-                    var init_bearing = Math.atan2(x, y)
-                    init_bearing = Math.toDegrees(init_bearing)
-                    var compass_bearing = (init_bearing + 360) % 360
+                    var diffLong = (location.Longitude - lastLocation.longitude)
+                    var y = Math.sin(diffLong) * Math.cos(location.Latitude.toDouble())
+                    var x = Math.cos(lastLocation.latitude)*Math.sin(location.Latitude.toDouble()) - Math.sin(lastLocation.latitude)*Math.cos(location.Latitude.toDouble())*Math.cos(diffLong)
+                    var compass_bearing = Math.toDegrees(Math.atan2(y, x))
+                    compass_bearing = (360 - ((compass_bearing + 360) % 360))
 
                     if(compass_bearing >= 315 || compass_bearing < 45){
                        North.add(location)
@@ -178,8 +180,21 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        Log.v("degree", compass.azimuth.toString())
-        //move ui elements around screen
+       var degree = compass.azimuth
+
+        if(degree >= 315 || degree < 45){
+            faceNorth()
+        }
+        else if(degree >= 45 && degree < 135){
+            faceEast()
+        }
+        else if(degree >= 135 && degree < 225){
+            faceSouth()
+        }
+        else {
+            faceWest()
+        }
+
     }
 
     fun clearArrays(){
@@ -187,5 +202,33 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         East = arrayListOf()
         South = arrayListOf()
         West = arrayListOf()
+    }
+
+    fun faceNorth(){
+        top.setText(North.size.toString())
+        right.setText(East.size.toString())
+        bottom.setText(South.size.toString())
+        left.setText(West.size.toString())
+    }
+
+    fun faceEast(){
+        top.setText(East.size.toString())
+        right.setText(South.size.toString())
+        bottom.setText(West.size.toString())
+        left.setText(North.size.toString())
+    }
+
+    fun faceSouth(){
+        top.setText(South.size.toString())
+        right.setText(West.size.toString())
+        bottom.setText(North.size.toString())
+        left.setText(East.size.toString())
+    }
+
+    fun faceWest(){
+        top.setText(West.size.toString())
+        right.setText(North.size.toString())
+        bottom.setText(East.size.toString())
+        left.setText(South.size.toString())
     }
 }

@@ -58,7 +58,7 @@ var Map = $.extend(true, {}, Map, {
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
                 Location.Longitude(ViewModel.selectedLocation().Longitude());
                 tempMarker = null;
-                debugger;
+
                 Map.Controller.save({
                     data: JSON.stringify(ko.mapping.toJS(Location)),
                     success: success

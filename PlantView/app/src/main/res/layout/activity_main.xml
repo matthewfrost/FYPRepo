@@ -45,5 +45,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/top"
-        android:id="@+id/bottom" />
+        android:id="@+id/bottom"/>
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:numColumns="auto_fit"
+        android:gravity="center"
+        android:columnWidth="90dp"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:id="@+id/gridView"
+        android:visibility="gone"/>
+
 </RelativeLayout>

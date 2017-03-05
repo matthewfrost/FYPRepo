@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.SurfaceHolder
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.android.volley.*
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     var South : MutableList<Location> = arrayListOf()
     var West : MutableList<Location> = arrayListOf()
     var allLocations : MutableList<Location> = arrayListOf()
+    var selectedArray : MutableList<Location> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +70,10 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         msensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+
+        top.setOnClickListener{
+            showGridView()
+        }
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -120,7 +126,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.205.119:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.123.251:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -204,11 +210,38 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         West = arrayListOf()
     }
 
+    fun showGridView(){
+        top.setVisibility(View.GONE)
+        right.setVisibility(View.GONE)
+        bottom.setVisibility(View.GONE)
+        left.setVisibility(View.GONE)
+        gridView.setVisibility(View.VISIBLE)
+        gridView.setAdapter(LocationAdapter(applicationContext, selectedArray))
+    }
+
+    fun hideGridView(){
+        top.setVisibility(View.VISIBLE)
+        right.setVisibility(View.VISIBLE)
+        bottom.setVisibility(View.VISIBLE)
+        left.setVisibility(View.VISIBLE)
+        gridView.setVisibility(View.GONE)
+    }
+
+    override fun onBackPressed() {
+        if(gridView.visibility == View.VISIBLE){
+            hideGridView()
+        }
+        else {
+            super.onBackPressed()
+        }
+    }
+
     fun faceNorth(){
         top.setText(North.size.toString())
         right.setText(East.size.toString())
         bottom.setText(South.size.toString())
         left.setText(West.size.toString())
+        selectedArray = North
     }
 
     fun faceEast(){
@@ -216,6 +249,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         right.setText(South.size.toString())
         bottom.setText(West.size.toString())
         left.setText(North.size.toString())
+        selectedArray = East
     }
 
     fun faceSouth(){
@@ -223,6 +257,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         right.setText(West.size.toString())
         bottom.setText(North.size.toString())
         left.setText(East.size.toString())
+        selectedArray = South
     }
 
     fun faceWest(){
@@ -230,5 +265,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         right.setText(North.size.toString())
         bottom.setText(East.size.toString())
         left.setText(South.size.toString())
+        selectedArray = West
     }
 }

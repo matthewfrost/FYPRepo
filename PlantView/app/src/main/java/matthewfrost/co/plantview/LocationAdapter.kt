@@ -9,15 +9,19 @@ import android.widget.Button
 /**
  * Created by Matthew on 05/03/2017.
  */
-class LocationAdapter(c : Context, array : MutableList<Location>): BaseAdapter()
+class LocationAdapter( array : MutableList<Location>, activity : MainActivity): BaseAdapter()
 {
-    var context : Context = c
+    var main = activity
+    var context : Context = activity.applicationContext
     var array : MutableList<Location> = array
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var button : Button;
         button = Button(context)
         button.setText(array.get(position).Name)
+        button.setOnClickListener {
+            main.showCardView(position)
+        }
         return button
     }
 

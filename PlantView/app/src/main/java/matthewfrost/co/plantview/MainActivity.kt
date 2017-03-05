@@ -55,17 +55,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         cameraSurface = CameraSurface(mSurfaceHolder)
         mSurfaceHolder.addCallback(cameraSurface)
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        locationRequest = LocationRequest.create()
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        locationRequest.setInterval(120000)
-        locationRequest.setFastestInterval(30000)
-        locationAPI = LocationServices.FusedLocationApi
-        mGoogleApi = GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build()
-        mGoogleApi.connect()
+
         compass = Compass(this)
         sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -85,6 +75,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.registerListener(this, gsensor, SensorManager.SENSOR_DELAY_GAME)
         sensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME)
         compass.start()
+
     }
 
     override fun onPause(){
@@ -92,6 +83,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.unregisterListener(this)
         compass.stop()
         cameraSurface.pause()
+        locationAPI.removeLocationUpdates(mGoogleApi, this)
+
     }
 
     override fun onResume(){
@@ -102,6 +95,17 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         mSurfaceHolder = surfaceView.holder
         var cameraSurface = CameraSurface(mSurfaceHolder)
         mSurfaceHolder.addCallback(cameraSurface)
+        locationRequest = LocationRequest.create()
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationRequest.setInterval(120000)
+        locationRequest.setFastestInterval(30000)
+        locationAPI = LocationServices.FusedLocationApi
+        mGoogleApi = GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build()
+        mGoogleApi.connect()
     }
 
     override fun onStop(){
@@ -216,7 +220,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         bottom.setVisibility(View.GONE)
         left.setVisibility(View.GONE)
         gridView.setVisibility(View.VISIBLE)
-        gridView.setAdapter(LocationAdapter(applicationContext, selectedArray))
+        gridView.setAdapter(LocationAdapter(selectedArray, this))
+    }
+
+    public fun showCardView(position : Int){
+        gridView.setVisibility(View.GONE)
+        cardView.setVisibility(View.VISIBLE)
     }
 
     fun hideGridView(){
@@ -227,9 +236,17 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         gridView.setVisibility(View.GONE)
     }
 
+    fun hideCardView(){
+        cardView.setVisibility(View.GONE)
+        gridView.setVisibility(View.VISIBLE)
+    }
+
     override fun onBackPressed() {
         if(gridView.visibility == View.VISIBLE){
             hideGridView()
+        }
+        else if(cardView.visibility == View.VISIBLE){
+            hideCardView()
         }
         else {
             super.onBackPressed()

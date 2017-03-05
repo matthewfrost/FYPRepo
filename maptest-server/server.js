@@ -23,7 +23,7 @@ var json = [];
 //SQL config
 var config = {
     userName: 'MatthewDev',
-    password: 'Elliot1995',
+    password: process.argv[2],
     server: '192.168.1.77',
 
     options: { port: 1433, database: 'FYPractice', rowCollectionOnRequestCompletion: true }

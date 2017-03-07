@@ -1,7 +1,7 @@
 ﻿var Map = $.extend(true, {}, Map, {
     Controller: {
         // url: '/api/Location',
-        url: 'http://109.148.205.119:3000',
+        url: 'http://109.147.44.95:3000',
         save: function (options) {
             $.ajax({
                 url: Map.Controller.url + '/submit',

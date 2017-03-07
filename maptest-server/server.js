@@ -5,6 +5,7 @@ var express = require('express');
 var app = express();
 var parser = require('body-parser');
 var types = require('tedious').TYPES;
+var password = process.argv[2];
 
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -23,7 +24,7 @@ var json = [];
 //SQL config
 var config = {
     userName: 'MatthewDev',
-    password: process.argv[2],
+    password: password,
     server: '192.168.1.77',
 
     options: { port: 1433, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
@@ -32,6 +33,7 @@ var config = {
 var connection = new Connection(config);
 
 connection.on('connect', function (err) {
+    console.log(password);
     console.log("connected");
 });
 

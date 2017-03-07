@@ -16,49 +16,59 @@
         android:layout_alignParentBottom="true" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/top"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/top"
+        android:background="@drawable/greencards_stacked"
         android:elevation="24dp" />
 
     <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:id="@+id/right"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentEnd="true"
-        android:id="@+id/right" />
+        android:layout_centerVertical="true"
+        android:background="@drawable/bluecards_stacked"
+        android:text="Button" />
 
     <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/right"
+        android:id="@+id/left"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
-        android:id="@+id/left" />
+        android:layout_alignTop="@+id/right"
+        android:background="@drawable/bluecards_stacked"
+        android:text="Button" />
 
     <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/bottom"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/top"
-        android:id="@+id/bottom"/>
+        android:background="@drawable/bluecards_stacked"
+        android:elevation="0dp"
+        android:text="0"
+        android:textAlignment="center" />
 
     <GridView
+        android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:numColumns="auto_fit"
-        android:gravity="center"
         android:columnWidth="90dp"
-        android:verticalSpacing="10dp"
+        android:gravity="center"
         android:horizontalSpacing="10dp"
-        android:id="@+id/gridView"
-        android:visibility="gone"/>
+        android:numColumns="auto_fit"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:verticalSpacing="10dp"
+        android:visibility="gone" />
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"

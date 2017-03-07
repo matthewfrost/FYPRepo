@@ -19,6 +19,12 @@ class LocationAdapter( array : MutableList<Location>, activity : MainActivity): 
         var button : Button;
         button = Button(context)
         button.setText(array.get(position).Name)
+        var scale = context.resources.displayMetrics.density
+        var height = (50f * scale * 0.5f).toInt()
+        var width = (100f * scale * 0.5f).toInt()
+        button.setHeight(height)
+        button.setWidth(width)
+        button.setBackgroundResource(R.drawable.bluecard)
         button.setOnClickListener {
             main.showCardView(position)
         }

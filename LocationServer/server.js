@@ -5,14 +5,15 @@ var parser = require('body-parser');
 var app = express();
 var TagData = require('./TagData.js');
 var types = require('tedious').TYPES;
+var password = process.argv[2];
 
 //SQL config
 var config = {
-    userName: 'FYPracticeDev',
-    password: 'password',
-    server: '192.168.1.73',
+    userName: 'MatthewDev',
+    password: password,
+    server: '192.168.1.77',
 
-    options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
+    options: { port: 1433, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
 
 var connection = new Connection(config);
@@ -39,10 +40,11 @@ app.get('/getData', function(req,res){
 
     var data = req.query;
 
-    db = data.database;
-    table = data.table;
-    column = data.column;
-    columnValue = data.columnValue;
+    //db = data.database;
+    //table = data.table;
+    //column = data.column;
+    //columnValue = data.columnValue;
+    ID = data.id
 
     var query = "dbo.GetData"
 
@@ -52,7 +54,7 @@ app.get('/getData', function(req,res){
         } else {
             var rowArray = [];
             rows.forEach(function (columns) {
-                var tagData = new TagData(columns[0].value, columns[1].value, columns[2].value, columns[3].value);
+                var tagData = new TagData(columns[0].value, columns[1].value, columns[2].value);
                 json.push(tagData);
             });
             console.log("here")
@@ -61,14 +63,15 @@ app.get('/getData', function(req,res){
         }
 
     });
-    request.addParameter('Database', types.VarChar, db);
-    request.addParameter('Table', types.VarChar, table);
-    request.addParameter('Column', types.VarChar, column);
-    request.addParameter('ColumnValue', types.VarChar, columnValue);
+    //request.addParameter('Database', types.VarChar, db);
+    //request.addParameter('Table', types.VarChar, table);
+    //request.addParameter('Column', types.VarChar, column);
+    //request.addParameter('ColumnValue', types.VarChar, columnValue);
+    request.addParameter('ID', types.Int, ID);
 
     connection.callProcedure(request);
 });
 
-app.listen(process.env.PORT || '8081');
+app.listen(process.env.PORT || '8082');
 
 exports = module.exports = app;

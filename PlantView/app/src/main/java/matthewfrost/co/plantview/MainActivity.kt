@@ -40,12 +40,14 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
     lateinit var cameraSurface : CameraSurface
+
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
     var South : MutableList<Location> = arrayListOf()
     var West : MutableList<Location> = arrayListOf()
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
+    var locationData : MutableList<LocationData> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,8 +131,38 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         getLocations(p0 as android.location.Location)
     }
 
+    public fun getLocationData(ID : Int){
+        var URL : String = "http://86.157.143.103:3001/getData?id=" + ID;
+
+        Http.init(baseContext)
+        Http.get{
+            url = URL
+
+            tag = this@MainActivity
+
+            headers {
+                "Content-Type" - "application/json"
+                "Data-Type" - "application/json"
+            }
+
+            onSuccess {
+                Response ->
+                val gson: Gson = Gson()
+                val JSONResponse = Response.toString(Charset.defaultCharset())
+                locationData = arrayListOf()
+                locationData = gson.fromJson(JSONResponse, Array<LocationData>::class.java).toMutableList()
+                Log.v("done", "done")
+            }
+
+            onFail {
+                error ->
+                Toast.makeText(baseContext, error.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.147.44.95:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://86.157.143.103:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

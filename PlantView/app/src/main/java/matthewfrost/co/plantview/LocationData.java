@@ -7,13 +7,11 @@ import java.util.TooManyListenersException;
  */
 
 public class LocationData {
-    public int ID;
     public String Item;
     public Long Data;
     public Date Timestamp;
 
-    public LocationData(int id, String item, Long data, Date timestamp){
-        ID = id;
+    public LocationData(String item, Long data, Date timestamp){
         Item = item;
         Data = data;
         Timestamp = timestamp;

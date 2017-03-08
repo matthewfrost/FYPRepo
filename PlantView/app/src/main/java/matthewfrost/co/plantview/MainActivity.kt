@@ -4,15 +4,10 @@ import android.content.Context
 import android.hardware.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
-import com.android.volley.*
-import com.android.volley.toolbox.*
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderApi
@@ -20,12 +15,14 @@ import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import com.ohmerhe.kolley.request.Http
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONArray
-import org.json.JSONObject
 import java.nio.charset.Charset
-import kotlin.jvm.javaClass
+import java.util.*
+import org.joda.time.DateTime
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener {
 
@@ -132,7 +129,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://86.157.143.103:3001/getData?id=" + ID;
+        var URL : String = "http://109.148.153.170:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -151,7 +148,34 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 val JSONResponse = Response.toString(Charset.defaultCharset())
                 locationData = arrayListOf()
                 locationData = gson.fromJson(JSONResponse, Array<LocationData>::class.java).toMutableList()
-                Log.v("done", "done")
+                var series : LineGraphSeries<DataPoint> = LineGraphSeries()
+                var index = 1
+                var maxDifference : Long = 0
+
+                var date : DateTime = DateTime()
+                var dayCount : Int = 0;
+                for(data in locationData){
+                    if(index < locationData.size) {
+                        var difference = locationData.get(index).Data - locationData.get(index - 1).Data
+                        series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
+                        index++
+                        if(difference > maxDifference){
+                            maxDifference = difference
+                        }
+                        /*var dataDate = DateTime(data.Timestamp)
+                        if(dataDate.toLocalDate() != date.toLocalDate()){
+                            dayCount++
+                            date = dataDate
+                        }*/
+                        //calculate max difference, use that for y axis limit
+                    }
+                }
+                graph.viewport.setMaxY(maxDifference + 10.0)
+                graph.viewport.setYAxisBoundsManual(true)
+                graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
+                graph.gridLabelRenderer.setNumHorizontalLabels(5)
+                graph.addSeries(series)
+
             }
 
             onFail {
@@ -162,7 +186,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://86.157.143.103:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.153.170:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -255,9 +279,10 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         gridView.setAdapter(LocationAdapter(selectedArray, this))
     }
 
-    public fun showCardView(position : Int){
+    public fun showCardView(ID: Int){
         gridView.setVisibility(View.GONE)
         cardView.setVisibility(View.VISIBLE)
+        getLocationData(ID)
     }
 
     fun hideGridView(){

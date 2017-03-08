@@ -1,9 +1,8 @@
 var method = TagData.prototype;
 
-function TagData(ID, Name, Value, Timestamp){
-    this.ID = ID;
-    this.Name = Name;
-    this.Value = Value;
+function TagData(Item, Data,Timestamp){
+    this.Item = Item;
+    this.Data = Data;
     this.Timestamp = Timestamp;
 }
 

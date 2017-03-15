@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://109.148.153.170:3001/getData?id=" + ID;
+        var URL : String = "http://109.148.145.79:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -151,9 +151,14 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 var series : LineGraphSeries<DataPoint> = LineGraphSeries()
                 var index = 1
                 var maxDifference : Long = 0
+                var mean : Double = 0.0
+                var total : Double = 0.0
+                var temp : Double = 0.0
+                var anomalies : MutableList<LocationData> = arrayListOf()
 
                 var date : DateTime = DateTime()
                 var dayCount : Int = 0;
+                graph.removeAllSeries()
                 for(data in locationData){
                     if(index < locationData.size) {
                         var difference = locationData.get(index).Data - locationData.get(index - 1).Data
@@ -162,19 +167,45 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                         if(difference > maxDifference){
                             maxDifference = difference
                         }
-                        /*var dataDate = DateTime(data.Timestamp)
-                        if(dataDate.toLocalDate() != date.toLocalDate()){
-                            dayCount++
-                            date = dataDate
-                        }*/
-                        //calculate max difference, use that for y axis limit
+                        total += difference
                     }
                 }
-                graph.viewport.setMaxY(maxDifference + 10.0)
+                mean = total / locationData.size
+                index = 1
+                for(data in locationData){
+                    if(index < locationData.size) {
+                        var x: Double = 0.0
+                        x = (locationData.get(index).Data - locationData.get(index - 1).Data) - mean
+                        temp += Math.pow(x, 2.0)
+                        index++
+                    }
+                }
+                index = 1
+                //var y = ((1.0 / (locationData.size - 1)) * temp)
+                var y = temp / locationData.size
+                var stdDev = Math.pow(y, 0.5)
+                for(data in locationData){
+                    if(index < locationData.size){
+                        var current = (locationData.get(index).Data - locationData.get(index - 1).Data)
+                        if(current > (mean + (2 * stdDev)) || current < (mean - (2 * stdDev))){
+                            anomalies.add(LocationData(locationData.get(index).Item, current, locationData.get(index).Timestamp))
+                        }
+                        index++
+                    }
+                }
+                var adapter : LocationDataAdapter = LocationDataAdapter(baseContext, android.R.layout.simple_list_item_1, anomalies)
+                listView.setAdapter(adapter)
+                graph.viewport.setMaxY(100.0)
                 graph.viewport.setYAxisBoundsManual(true)
                 graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
                 graph.gridLabelRenderer.setNumHorizontalLabels(5)
+                graph.getViewport().setScrollable(true); // enables horizontal scrolling
+               // graph.getViewport().setScrollableY(true); // enables vertical scrolling
+                graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+               // graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
                 graph.addSeries(series)
+                progressBar2.setVisibility(View.GONE)
+                graph.setVisibility(View.VISIBLE)
 
             }
 
@@ -186,7 +217,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.153.170:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.145.79:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -282,6 +313,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     public fun showCardView(ID: Int){
         gridView.setVisibility(View.GONE)
         cardView.setVisibility(View.VISIBLE)
+        progressBar2.setVisibility(View.VISIBLE)
         getLocationData(ID)
     }
 
@@ -296,6 +328,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     fun hideCardView(){
         cardView.setVisibility(View.GONE)
         gridView.setVisibility(View.VISIBLE)
+        graph.setVisibility(View.GONE)
     }
 
     override fun onBackPressed() {

@@ -16,4 +16,9 @@ public class LocationData {
         Data = data;
         Timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return Timestamp.toString() + " " + Data.toString();
+    }
 }

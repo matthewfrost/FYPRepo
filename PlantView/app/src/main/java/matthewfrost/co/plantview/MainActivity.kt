@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://109.148.153.119:3001/getData?id=" + ID;
+        var URL : String = "http://109.148.1.200:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -257,13 +257,14 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
         val db = helper.getWritableDatabase()
         LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
+        helper.createTable(db)
         for(data in locationData){
             if(index < locationData.size) {
                 val contentValues : ContentValues = ContentValues()
                 contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_ITEM, locationData.get(index).Item)
                 contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_DATA, locationData.get(index).Data)
                 contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Timestamp.toString())
-                val newRow = db.insert(LocationDataDbHelper.DATABASE_NAME, null, contentValues)
+                val newRow = db.insert(LocationDataContract.DataEntry.CURRENT_TABLE, null, contentValues)
 
                 var difference = locationData.get(index).Data - locationData.get(index - 1).Data
                 series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
@@ -285,7 +286,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             }
         }
         index = 1
-        //var y = ((1.0 / (locationData.size - 1)) * temp)
+
         var y = temp / locationData.size
         var stdDev = Math.pow(y, 0.5)
         for(data in locationData){
@@ -306,7 +307,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         graph.getViewport().setXAxisBoundsManual(true)
         graph.getGridLabelRenderer().setNumHorizontalLabels(4)
         graph.getViewport().setMinX(locationData.get(0).Timestamp.getTime().toDouble())
-        graph.getViewport().setMaxX(locationData.get(0).Timestamp.getTime().toDouble() + (3*24*60*60*1000)  )
+        graph.getViewport().setMaxX(locationData.get(0).Timestamp.getTime().toDouble() + (3*24*60*60*1000)  ) //adding 3 days
         graph.getViewport().setScrollable(true)
 
         graph.addSeries(series)
@@ -315,7 +316,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.153.119:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.1.200:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

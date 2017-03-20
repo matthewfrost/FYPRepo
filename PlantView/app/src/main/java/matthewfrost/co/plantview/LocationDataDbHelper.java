@@ -14,17 +14,22 @@ public class LocationDataDbHelper extends SQLiteOpenHelper
     public static final String DATABASE_NAME = "LocationData.db";
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + LocationDataContract.DataEntry.TABLE_NAME + " (" +
+            "CREATE TABLE '" + LocationDataContract.DataEntry.CURRENT_TABLE + "' (" +
                     LocationDataContract.DataEntry._ID + " INTEGER PRIMARY KEY," +
                     LocationDataContract.DataEntry.COLUMN_NAME_ITEM + " TEXT," +
                     LocationDataContract.DataEntry.COLUMN_NAME_DATA + " REAL," +
                     LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + LocationDataContract.DataEntry.CURRENT_TABLE;
+            "DROP TABLE IF EXISTS '" + LocationDataContract.DataEntry.CURRENT_TABLE + "';";
 
     public LocationDataDbHelper(Context c){
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public void createTable(SQLiteDatabase db){
+        db.execSQL(SQL_DELETE_ENTRIES);
+        db.execSQL(SQL_CREATE_ENTRIES);
     }
 
     @Override

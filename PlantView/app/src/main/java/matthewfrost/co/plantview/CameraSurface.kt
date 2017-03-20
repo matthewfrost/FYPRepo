@@ -29,6 +29,7 @@ class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
     }
 
     fun pause(){
+        camera.stopPreview()
         camera.release()
     }
 

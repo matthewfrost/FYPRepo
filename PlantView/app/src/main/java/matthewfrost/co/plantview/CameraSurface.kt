@@ -42,7 +42,6 @@ class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
             camera.setPreviewDisplay(holder)
             camera.startPreview()
         } catch (e: Exception) {
-            Log.e("FYP", "init_camera: " + e)
             return
         }
 

@@ -1,6 +1,8 @@
 package matthewfrost.co.plantview
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.hardware.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -22,7 +24,9 @@ import com.ohmerhe.kolley.request.Http
 import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.charset.Charset
 import java.util.*
-import org.joda.time.DateTime
+import android.database.sqlite.SQLiteDatabase
+import java.text.SimpleDateFormat
+
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener {
 
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
     lateinit var cameraSurface : CameraSurface
+    lateinit var helper : LocationDataDbHelper
 
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
@@ -63,6 +68,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         top.setOnClickListener{
             showGridView()
         }
+
+        helper = LocationDataDbHelper(applicationContext)
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -129,7 +136,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://109.148.145.79:3001/getData?id=" + ID;
+        var URL : String = "http://109.148.153.119:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -156,11 +163,18 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 var temp : Double = 0.0
                 var anomalies : MutableList<LocationData> = arrayListOf()
 
-                var date : DateTime = DateTime()
-                var dayCount : Int = 0;
+                val db = helper.getWritableDatabase()
+                LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
                 graph.removeAllSeries()
-                for(data in locationData){
+                createGraph(locationData)
+                /*for(data in locationData){
                     if(index < locationData.size) {
+                        val contentValues : ContentValues = ContentValues()
+                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_ITEM, locationData.get(index).Item)
+                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_DATA, locationData.get(index).Data)
+                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Data)
+                        val newRow = db.insert(LocationDataDbHelper.DATABASE_NAME, null, contentValues)
+
                         var difference = locationData.get(index).Data - locationData.get(index - 1).Data
                         series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
                         index++
@@ -198,26 +212,110 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 graph.viewport.setMaxY(100.0)
                 graph.viewport.setYAxisBoundsManual(true)
                 graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
-                graph.gridLabelRenderer.setNumHorizontalLabels(5)
-                graph.getViewport().setScrollable(true); // enables horizontal scrolling
-               // graph.getViewport().setScrollableY(true); // enables vertical scrolling
-                graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-               // graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+
+                graph.getViewport().setXAxisBoundsManual(true)
+                graph.getGridLabelRenderer().setNumHorizontalLabels(4)
+                graph.getViewport().setMinX(locationData.get(0).Timestamp.getTime().toDouble())
+                graph.getViewport().setMaxX(locationData.get(0).Timestamp.getTime().toDouble() + (3*24*60*60*1000)  )
+                graph.getViewport().setScrollable(true)
+
                 graph.addSeries(series)
                 progressBar2.setVisibility(View.GONE)
-                graph.setVisibility(View.VISIBLE)
+                graph.setVisibility(View.VISIBLE)*/
+
 
             }
-
             onFail {
                 error ->
-                Toast.makeText(baseContext, error.toString(), Toast.LENGTH_SHORT).show()
+                val db = helper.getReadableDatabase()
+
+                val projection = arrayOf<String>(LocationDataContract.DataEntry.COLUMN_NAME_DATA, LocationDataContract.DataEntry.COLUMN_NAME_ITEM, LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP)
+                graph.removeAllSeries()
+                var cursor : Cursor = db.query(LocationDataContract.DataEntry.CURRENT_TABLE, projection, null, null, null, null, null)
+                locationData = arrayListOf()
+                val df = SimpleDateFormat("MM/dd/yyyy")
+                while(cursor.moveToNext()){
+                    val Item : String = cursor.getString(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_ITEM))
+                    val Data : Long = cursor.getLong(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_DATA))
+                    val tempTimestamp : String = cursor.getString(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP))
+                    val Timestamp = df.parse(tempTimestamp)
+                    locationData.add(LocationData(Item, Data, Timestamp))
+                }
+                createGraph(locationData)
             }
         }
     }
 
+    public fun createGraph(locationData : MutableList<LocationData>){
+        var series : LineGraphSeries<DataPoint> = LineGraphSeries()
+        var index = 1
+        var maxDifference : Long = 0
+        var mean : Double = 0.0
+        var total : Double = 0.0
+        var temp : Double = 0.0
+        var anomalies : MutableList<LocationData> = arrayListOf()
+
+        val db = helper.getWritableDatabase()
+        LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
+        for(data in locationData){
+            if(index < locationData.size) {
+                val contentValues : ContentValues = ContentValues()
+                contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_ITEM, locationData.get(index).Item)
+                contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_DATA, locationData.get(index).Data)
+                contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Timestamp.toString())
+                val newRow = db.insert(LocationDataDbHelper.DATABASE_NAME, null, contentValues)
+
+                var difference = locationData.get(index).Data - locationData.get(index - 1).Data
+                series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
+                index++
+                if(difference > maxDifference){
+                    maxDifference = difference
+                }
+                total += difference
+            }
+        }
+        mean = total / locationData.size
+        index = 1
+        for(data in locationData){
+            if(index < locationData.size) {
+                var x: Double = 0.0
+                x = (locationData.get(index).Data - locationData.get(index - 1).Data) - mean
+                temp += Math.pow(x, 2.0)
+                index++
+            }
+        }
+        index = 1
+        //var y = ((1.0 / (locationData.size - 1)) * temp)
+        var y = temp / locationData.size
+        var stdDev = Math.pow(y, 0.5)
+        for(data in locationData){
+            if(index < locationData.size){
+                var current = (locationData.get(index).Data - locationData.get(index - 1).Data)
+                if(current > (mean + (2 * stdDev)) || current < (mean - (2 * stdDev))){
+                    anomalies.add(LocationData(locationData.get(index).Item, current, locationData.get(index).Timestamp))
+                }
+                index++
+            }
+        }
+        var adapter : LocationDataAdapter = LocationDataAdapter(baseContext, android.R.layout.simple_list_item_1, anomalies)
+        listView.setAdapter(adapter)
+        graph.viewport.setMaxY(100.0)
+        graph.viewport.setYAxisBoundsManual(true)
+        graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
+
+        graph.getViewport().setXAxisBoundsManual(true)
+        graph.getGridLabelRenderer().setNumHorizontalLabels(4)
+        graph.getViewport().setMinX(locationData.get(0).Timestamp.getTime().toDouble())
+        graph.getViewport().setMaxX(locationData.get(0).Timestamp.getTime().toDouble() + (3*24*60*60*1000)  )
+        graph.getViewport().setScrollable(true)
+
+        graph.addSeries(series)
+        progressBar2.setVisibility(View.GONE)
+        graph.setVisibility(View.VISIBLE)
+    }
+
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.145.79:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.148.153.119:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

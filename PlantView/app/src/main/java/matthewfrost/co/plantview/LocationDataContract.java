@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
  * Created by Matthew on 20/03/2017.
  */
 
-public final class LocationDataContract {
+public class LocationDataContract {
 
     private LocationDataContract(){}
 

@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var sensorManager : SensorManager
     lateinit var cameraSurface : CameraSurface
     lateinit var helper : LocationDataDbHelper
+    lateinit var db : SQLiteDatabase
 
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://109.148.1.200:3001/getData?id=" + ID;
+        var URL : String = "http://81.158.207.154:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -163,10 +164,10 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 var temp : Double = 0.0
                 var anomalies : MutableList<LocationData> = arrayListOf()
 
-                val db = helper.getWritableDatabase()
-                LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
+                //val db = helper.getWritableDatabase()
+               // LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
                 graph.removeAllSeries()
-                createGraph(locationData)
+                createGraph(locationData, true)
                 /*for(data in locationData){
                     if(index < locationData.size) {
                         val contentValues : ContentValues = ContentValues()
@@ -231,22 +232,22 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
                 val projection = arrayOf<String>(LocationDataContract.DataEntry.COLUMN_NAME_DATA, LocationDataContract.DataEntry.COLUMN_NAME_ITEM, LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP)
                 graph.removeAllSeries()
-                var cursor : Cursor = db.query(LocationDataContract.DataEntry.CURRENT_TABLE, projection, null, null, null, null, null)
+                var cursor : Cursor = db.query(LocationDataContract.DataEntry.CURRENT_TABLE, projection, null, null, null, null, null) //do we know what current table is?
                 locationData = arrayListOf()
                 val df = SimpleDateFormat("MM/dd/yyyy")
                 while(cursor.moveToNext()){
                     val Item : String = cursor.getString(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_ITEM))
                     val Data : Long = cursor.getLong(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_DATA))
-                    val tempTimestamp : String = cursor.getString(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP))
-                    val Timestamp = df.parse(tempTimestamp)
+                    val tempTimestamp : Long = cursor.getLong(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP))
+                    val Timestamp = Date(tempTimestamp)
                     locationData.add(LocationData(Item, Data, Timestamp))
                 }
-                createGraph(locationData)
+                createGraph(locationData, false)
             }
         }
     }
 
-    public fun createGraph(locationData : MutableList<LocationData>){
+    public fun createGraph(locationData : MutableList<LocationData>, online : Boolean){
         var series : LineGraphSeries<DataPoint> = LineGraphSeries()
         var index = 1
         var maxDifference : Long = 0
@@ -255,16 +256,26 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         var temp : Double = 0.0
         var anomalies : MutableList<LocationData> = arrayListOf()
 
-        val db = helper.getWritableDatabase()
-        LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
-        helper.createTable(db)
+
+        Toast.makeText(applicationContext, LocationDataContract.DataEntry.CURRENT_TABLE, Toast.LENGTH_SHORT ).show()
+        Log.d("DATA", LocationDataDbHelper.SQL_CREATE_ENTRIES)
+
+        if(online){
+            db = helper.getWritableDatabase()
+            helper.createTable(db)
+        }
+        else{
+            db = helper.getReadableDatabase()
+        }
         for(data in locationData){
             if(index < locationData.size) {
                 val contentValues : ContentValues = ContentValues()
                 contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_ITEM, locationData.get(index).Item)
                 contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_DATA, locationData.get(index).Data)
-                contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Timestamp.toString())
-                val newRow = db.insert(LocationDataContract.DataEntry.CURRENT_TABLE, null, contentValues)
+                contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Timestamp.time)
+                if(online) {
+                    val newRow = db.insert(LocationDataContract.DataEntry.CURRENT_TABLE, null, contentValues)
+                }
 
                 var difference = locationData.get(index).Data - locationData.get(index - 1).Data
                 series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
@@ -316,7 +327,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.148.1.200:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://81.158.207.154:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {
@@ -409,10 +420,11 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         gridView.setAdapter(LocationAdapter(selectedArray, this))
     }
 
-    public fun showCardView(ID: Int){
+    public fun showCardView(ID: Int, Name : String){
         gridView.setVisibility(View.GONE)
         cardView.setVisibility(View.VISIBLE)
         progressBar2.setVisibility(View.VISIBLE)
+        LocationDataContract.DataEntry.CURRENT_TABLE = Name
         getLocationData(ID)
     }
 

@@ -27,7 +27,8 @@ class LocationAdapter( array : MutableList<Location>, activity : MainActivity): 
         button.setBackgroundResource(R.drawable.bluecard)
         button.setOnClickListener {
             var ID = array.get(position).ID
-            main.showCardView(ID)
+            var Name = array.get(position).ValueName
+            main.showCardView(ID, Name)
         }
         return button
     }

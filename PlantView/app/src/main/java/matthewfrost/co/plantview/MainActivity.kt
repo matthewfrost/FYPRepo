@@ -6,10 +6,8 @@ import android.database.Cursor
 import android.hardware.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
-import android.widget.Toast
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderApi
@@ -25,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.charset.Charset
 import java.util.*
 import android.database.sqlite.SQLiteDatabase
-import java.text.SimpleDateFormat
 
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener {
@@ -91,7 +88,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         compass.stop()
         cameraSurface.pause()
         locationAPI.removeLocationUpdates(mGoogleApi, this)
-
     }
 
     override fun onResume(){
@@ -164,77 +160,18 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 var temp : Double = 0.0
                 var anomalies : MutableList<LocationData> = arrayListOf()
 
-                //val db = helper.getWritableDatabase()
-               // LocationDataContract.DataEntry.CURRENT_TABLE = locationData.get(0).Item
                 graph.removeAllSeries()
                 createGraph(locationData, true)
-                /*for(data in locationData){
-                    if(index < locationData.size) {
-                        val contentValues : ContentValues = ContentValues()
-                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_ITEM, locationData.get(index).Item)
-                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_DATA, locationData.get(index).Data)
-                        contentValues.put(LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP, locationData.get(index).Data)
-                        val newRow = db.insert(LocationDataDbHelper.DATABASE_NAME, null, contentValues)
-
-                        var difference = locationData.get(index).Data - locationData.get(index - 1).Data
-                        series.appendData(DataPoint(data.Timestamp, difference.toDouble()), true, 1000)
-                        index++
-                        if(difference > maxDifference){
-                            maxDifference = difference
-                        }
-                        total += difference
-                    }
-                }
-                mean = total / locationData.size
-                index = 1
-                for(data in locationData){
-                    if(index < locationData.size) {
-                        var x: Double = 0.0
-                        x = (locationData.get(index).Data - locationData.get(index - 1).Data) - mean
-                        temp += Math.pow(x, 2.0)
-                        index++
-                    }
-                }
-                index = 1
-                //var y = ((1.0 / (locationData.size - 1)) * temp)
-                var y = temp / locationData.size
-                var stdDev = Math.pow(y, 0.5)
-                for(data in locationData){
-                    if(index < locationData.size){
-                        var current = (locationData.get(index).Data - locationData.get(index - 1).Data)
-                        if(current > (mean + (2 * stdDev)) || current < (mean - (2 * stdDev))){
-                            anomalies.add(LocationData(locationData.get(index).Item, current, locationData.get(index).Timestamp))
-                        }
-                        index++
-                    }
-                }
-                var adapter : LocationDataAdapter = LocationDataAdapter(baseContext, android.R.layout.simple_list_item_1, anomalies)
-                listView.setAdapter(adapter)
-                graph.viewport.setMaxY(100.0)
-                graph.viewport.setYAxisBoundsManual(true)
-                graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
-
-                graph.getViewport().setXAxisBoundsManual(true)
-                graph.getGridLabelRenderer().setNumHorizontalLabels(4)
-                graph.getViewport().setMinX(locationData.get(0).Timestamp.getTime().toDouble())
-                graph.getViewport().setMaxX(locationData.get(0).Timestamp.getTime().toDouble() + (3*24*60*60*1000)  )
-                graph.getViewport().setScrollable(true)
-
-                graph.addSeries(series)
-                progressBar2.setVisibility(View.GONE)
-                graph.setVisibility(View.VISIBLE)*/
-
-
             }
             onFail {
                 error ->
                 val db = helper.getReadableDatabase()
-
                 val projection = arrayOf<String>(LocationDataContract.DataEntry.COLUMN_NAME_DATA, LocationDataContract.DataEntry.COLUMN_NAME_ITEM, LocationDataContract.DataEntry.COLUMN_NAME_TIMESTAMP)
+
                 graph.removeAllSeries()
                 var cursor : Cursor = db.query(LocationDataContract.DataEntry.CURRENT_TABLE, projection, null, null, null, null, null) //do we know what current table is?
                 locationData = arrayListOf()
-                val df = SimpleDateFormat("MM/dd/yyyy")
+
                 while(cursor.moveToNext()){
                     val Item : String = cursor.getString(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_ITEM))
                     val Data : Long = cursor.getLong(cursor.getColumnIndexOrThrow(LocationDataContract.DataEntry.COLUMN_NAME_DATA))
@@ -256,10 +193,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         var temp : Double = 0.0
         var anomalies : MutableList<LocationData> = arrayListOf()
 
-
-        Toast.makeText(applicationContext, LocationDataContract.DataEntry.CURRENT_TABLE, Toast.LENGTH_SHORT ).show()
-        Log.d("DATA", LocationDataDbHelper.SQL_CREATE_ENTRIES)
-
         if(online){
             db = helper.getWritableDatabase()
             helper.createTable(db)
@@ -267,6 +200,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         else{
             db = helper.getReadableDatabase()
         }
+
         for(data in locationData){
             if(index < locationData.size) {
                 val contentValues : ContentValues = ContentValues()
@@ -340,12 +274,13 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 "Data-Type" - "application/json"
             }
 
-            onStart { Log.v("network", "start") }
+            onStart {  }
 
             onSuccess {
                 Response ->
                 val gson: Gson = Gson()
                 val JSONResponse = Response.toString(Charset.defaultCharset())
+
                 clearArrays()
                 allLocations = gson.fromJson(JSONResponse, Array<Location>::class.java).toMutableList()
 
@@ -369,6 +304,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                         West.add(location)
                     }
                 }
+
                 top.setText(North.size.toString())
                 right.setText(East.size.toString())
                 bottom.setText(South.size.toString())
@@ -376,8 +312,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             }
 
             onFail {
-                error ->
-                Toast.makeText(baseContext, error.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }

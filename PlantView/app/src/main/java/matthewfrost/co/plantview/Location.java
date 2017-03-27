@@ -24,5 +24,7 @@ public class Location
         Latitude = lat;
         Longitude = longitude;
         ValueName = VName;
+
+
     }
 }

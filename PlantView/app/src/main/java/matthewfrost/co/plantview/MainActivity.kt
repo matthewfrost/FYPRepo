@@ -24,8 +24,10 @@ import java.nio.charset.Charset
 import java.util.*
 import android.database.sqlite.SQLiteDatabase
 import android.os.Handler
-import com.nhaarman.async.asyncUI
-import kotlinx.coroutines.experimental.async
+import com.google.android.gms.vision.CameraSource
+import com.google.android.gms.vision.Detector
+import com.google.android.gms.vision.barcode.Barcode
+import com.google.android.gms.vision.barcode.BarcodeDetector
 
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener {
@@ -40,9 +42,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var gsensor : Sensor
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
-    lateinit var cameraSurface : CameraSurface
+    //lateinit var cameraSurface : CameraSurface
     lateinit var helper : LocationDataDbHelper
     lateinit var db : SQLiteDatabase
+    lateinit var barcodeReader : BarcodeDetector
+    lateinit var cameraSurface : CameraSource
+    var scanQR : Boolean = true
 
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
@@ -56,9 +61,41 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        barcodeReader = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build()
+        var handler = Handler()
+        barcodeReader.setProcessor(object : Detector.Processor<Barcode> {
+            override fun release() {}
+
+            override fun receiveDetections(detections: Detector.Detections<Barcode>) {
+                var detections = detections.getDetectedItems()
+
+                if(detections.size() != 0){
+                    handler.post {
+                        if(scanQR) {
+                            var id = detections.valueAt(0).displayValue.split(",")[0].toInt()
+                            var name = detections.valueAt(0).displayValue.split(",")[1]
+                            scanQR = false;
+                            showCardView(id, name)
+                        }
+                    }
+                }
+            }
+        })
+
         mSurfaceHolder = surfaceView.holder
-        cameraSurface = CameraSurface(mSurfaceHolder)
-        mSurfaceHolder.addCallback(cameraSurface)
+       // cameraSurface = CameraSurface(mSurfaceHolder, barcodeReader, applicationContext)
+        cameraSurface = CameraSource.Builder(this, barcodeReader).setRequestedPreviewSize(1920, 1080).build()
+
+        //mSurfaceHolder.addCallback(cameraSurface)
+        surfaceView.getHolder().addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                cameraSurface.start(surfaceView.holder)
+            }
+
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {}
+        })
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         compass = Compass(this)
@@ -71,6 +108,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         }
 
         helper = LocationDataDbHelper(applicationContext)
+
+
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -89,7 +128,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         super.onPause()
         sensorManager.unregisterListener(this)
         compass.stop()
-        cameraSurface.pause()
+        //cameraSurface.pause()
         locationAPI.removeLocationUpdates(mGoogleApi, this)
     }
 
@@ -99,8 +138,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME)
         compass.start()
         mSurfaceHolder = surfaceView.holder
-        var cameraSurface = CameraSurface(mSurfaceHolder)
-        mSurfaceHolder.addCallback(cameraSurface)
+        //var cameraSurface = CameraSurface(mSurfaceHolder, barcodeReader, applicationContext)
+        //mSurfaceHolder.addCallback(cameraSurface)
         locationRequest = LocationRequest.create()
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         locationRequest.setInterval(120000)
@@ -136,7 +175,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     public fun getLocationData(ID : Int){
-        var URL : String = "http://109.147.46.185:3001/getData?id=" + ID;
+        var URL : String = "http://109.147.188.216:3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -264,13 +303,14 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                     graph.addSeries(series)
                     progressBar2.setVisibility(View.GONE)
                     graph.setVisibility(View.VISIBLE)
+                    scanQR = true
                 }
             }.start()
 
     }
 
     public fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.147.46.185:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://109.147.188.216:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

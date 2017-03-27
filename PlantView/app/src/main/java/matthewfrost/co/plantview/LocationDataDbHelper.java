@@ -29,7 +29,7 @@ public class LocationDataDbHelper extends SQLiteOpenHelper
     }
 
     public void createTable(SQLiteDatabase db){
-        db.execSQL("DROP TABLE IF EXISTS '" + LocationDataContract.DataEntry.CURRENT_TABLE + "';");
+        db.execSQL("DROP TABLE IF EXISTS " + LocationDataContract.DataEntry.CURRENT_TABLE + ";");
         Log.d("DATA", LocationDataContract.DataEntry.CURRENT_TABLE);
         Log.d("DATA", SQL_CREATE_ENTRIES);
         db.execSQL("CREATE TABLE " + LocationDataContract.DataEntry.CURRENT_TABLE + " (" +

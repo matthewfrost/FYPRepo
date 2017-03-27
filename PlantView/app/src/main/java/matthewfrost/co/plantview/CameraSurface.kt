@@ -7,14 +7,18 @@ import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.WindowManager
+import com.google.android.gms.vision.CameraSource
+import com.google.android.gms.vision.barcode.BarcodeDetector
 
 /**
  * Created by Matthew on 17/02/2017.
  */
-class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
+class CameraSurface(surfaceHolder : SurfaceHolder, barcodeReader : BarcodeDetector, context : Context): SurfaceHolder.Callback
 {
     public val holder : SurfaceHolder = surfaceHolder
-    lateinit var camera : Camera
+    lateinit var camera : CameraSource
+    val reader : BarcodeDetector = barcodeReader
+    val c = context
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -29,22 +33,30 @@ class CameraSurface(surfaceHolder : SurfaceHolder): SurfaceHolder.Callback
     }
 
     fun pause(){
-        camera.stopPreview()
-        camera.release()
+        //camera.stopPreview()
+        //camera.release()
     }
 
     private fun start_camera() {
-        camera = Camera.open()
-
-        val param : Camera.Parameters = camera.parameters
-        param.setRotation(180)
-        camera.parameters = param
-        try {
-            camera.setPreviewDisplay(holder)
-            camera.startPreview()
-        } catch (e: Exception) {
+//        camera = Camera.open()
+//
+//        val param : Camera.Parameters = camera.parameters
+//        param.setRotation(180)
+//        camera.parameters = param
+//        try {
+//            camera.setPreviewDisplay(holder)
+//            camera.startPreview()
+//        } catch (e: Exception) {
+//            return
+//        }
+        camera = CameraSource.Builder(c, reader).setRequestedPreviewSize(1920, 1080).build()
+        try{
+            camera.start(holder)
+        }
+        catch(e : Exception){
             return
         }
+
 
     }
 }

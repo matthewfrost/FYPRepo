@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     lateinit var gsensor : Sensor
     lateinit var msensor : Sensor
     lateinit var sensorManager : SensorManager
-    //lateinit var cameraSurface : CameraSurface
     lateinit var helper : LocationDataDbHelper
     lateinit var db : SQLiteDatabase
     lateinit var barcodeReader : BarcodeDetector
@@ -83,10 +82,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         })
 
         mSurfaceHolder = surfaceView.holder
-       // cameraSurface = CameraSurface(mSurfaceHolder, barcodeReader, applicationContext)
         cameraSurface = CameraSource.Builder(this, barcodeReader).setRequestedPreviewSize(1920, 1080).build()
-
-        //mSurfaceHolder.addCallback(cameraSurface)
         surfaceView.getHolder().addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 cameraSurface.start(surfaceView.holder)
@@ -128,7 +124,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         super.onPause()
         sensorManager.unregisterListener(this)
         compass.stop()
-        //cameraSurface.pause()
         locationAPI.removeLocationUpdates(mGoogleApi, this)
     }
 
@@ -138,8 +133,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME)
         compass.start()
         mSurfaceHolder = surfaceView.holder
-        //var cameraSurface = CameraSurface(mSurfaceHolder, barcodeReader, applicationContext)
-        //mSurfaceHolder.addCallback(cameraSurface)
         locationRequest = LocationRequest.create()
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         locationRequest.setInterval(120000)
@@ -174,7 +167,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         getLocations(p0 as android.location.Location)
     }
 
-    public fun getLocationData(ID : Int){
+    fun getLocationData(ID : Int){
         var URL : String = "http://109.147.188.216:3001/getData?id=" + ID;
 
         Http.init(baseContext)
@@ -194,13 +187,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 val JSONResponse = Response.toString(Charset.defaultCharset())
                 locationData = arrayListOf()
                 locationData = gson.fromJson(JSONResponse, Array<LocationData>::class.java).toMutableList()
-                var series : LineGraphSeries<DataPoint> = LineGraphSeries()
-                var index = 1
-                var maxDifference : Long = 0
-                var mean : Double = 0.0
-                var total : Double = 0.0
-                var temp : Double = 0.0
-                var anomalies : MutableList<LocationData> = arrayListOf()
 
                 graph.removeAllSeries()
                 createGraph(locationData, true)
@@ -226,7 +212,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         }
     }
 
-    public fun createGraph(locationData : MutableList<LocationData>, online : Boolean){
+    fun createGraph(locationData : MutableList<LocationData>, online : Boolean){
         var series : LineGraphSeries<DataPoint> = LineGraphSeries()
         var index = 1
         var maxDifference : Long = 0
@@ -309,7 +295,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     }
 
-    public fun getLocations(location : android.location.Location){
+    fun getLocations(location : android.location.Location){
         var URL : String = "http://109.147.188.216:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)

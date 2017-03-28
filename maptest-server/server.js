@@ -69,39 +69,6 @@ app.get('/getSchema', function (req, res) {
 
 });
 
-//Mongo config
-//var MongoClient = require('mongodb').MongoClient;
-//var assert = require('assert')
-//var url = 'mongodb://localhost:27017/TagsDb';
-//var mongo;
-
-//MongoClient.connect(url, function (err, db) {
-//    assert.equal(null, err);
-//    console.log("Connected successfully to server");
-//    mongo = db;
-//    //db.close();
-//});
-
-//var getAllTags = function (db, callback) {
-//    var collection = db.collection('tags');
-//    collection.find({}).toArray(function (err, docs) {
-//        assert.equal(err, null);
-//        callback(docs);
-//    });
-//}
-
-//var createTag = function (item, db, callback) {
-//    var collection = db.collection('tags');
-//    var tag = { Name: item.Name, tag_name: item.TagName, Latitude: item.Latitude, Longitude: item.Longitude };
-//    collection.insert([tag], function (err, result) {
-//        if (err) {
-
-//        }
-//        else {
-//            console.log("inserted");
-//        }
-//    });
-//}
 
 app.get('/getAll', function (req, res) {
     request = new Request("select * from Location where DeletedOn is null", function (err, rowCount, rows) {

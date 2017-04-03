@@ -9,9 +9,9 @@ var types = require('tedious').TYPES;
 var Location = require("./Location.js");
 
 var config = {
-    userName: 'MatthewDev',
+    userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.77',
+    server: '152.105.135.220',
     options: {
         port: 1433,
         database: 'FYPractice',
@@ -125,6 +125,6 @@ function calculateStDev(data) {
     }
 }
 
-app.listen(process.env.PORT || '8082');
+app.listen(process.env.PORT || '8083');
 
 exports = module.exports = app;

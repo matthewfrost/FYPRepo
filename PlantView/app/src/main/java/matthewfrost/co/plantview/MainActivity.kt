@@ -2,6 +2,7 @@ package matthewfrost.co.plantview
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.hardware.*
 import android.support.v7.app.AppCompatActivity
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
+    var serverIP : String = "152.105.135.220"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +127,9 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         sensorManager.unregisterListener(this)
         compass.stop()
         locationAPI.removeLocationUpdates(mGoogleApi, this)
+        cameraSurface.release()
+        cameraSurface.stop()
+        startService(Intent(this, AnomalyService::class.java))
     }
 
     override fun onResume(){
@@ -168,7 +173,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     fun getLocationData(ID : Int){
-        var URL : String = "http://109.147.188.216:3001/getData?id=" + ID;
+    var URL : String = "http://" + serverIP + ":8082/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -296,7 +301,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     fun getLocations(location : android.location.Location){
-        var URL : String = "http://109.147.188.216:3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://" + serverIP + ":8081/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

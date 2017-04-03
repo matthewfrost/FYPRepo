@@ -9,11 +9,11 @@ var password = process.argv[2];
 
 //SQL config
 var config = {
-    userName: 'MatthewDev',
+    userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.77',
+    server: '152.105.135.220',
 
-    options: { port: 1433, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
+    options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
 
 var connection = new Connection(config);

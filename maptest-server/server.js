@@ -159,7 +159,6 @@ app.post('/submit', function (req, res) {
     item = req.body;
 
     var createTag = function (item) {
-        debugger;
         var sql = 'dbo.Location_Merge';
         var request = new Request(sql, function (err, rowCount, rows) {
             var item = rows[0];

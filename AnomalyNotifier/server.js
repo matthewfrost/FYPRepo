@@ -92,6 +92,24 @@ app.get('/getAnomalies', function (req, res) {
     connection.callProcedure(request);
 });
 
+app.post('/submitResolution', function (req, res) {
+    var data, sql, request;
+
+    data = req.body;
+
+    sql = 'dbo.submitResolution';
+
+    request = new Request(sql, function (err, rowCount, rows) {
+
+    });
+
+    request.addParameter('LocationID', types.Int, data.LocationID);
+    request.addParameter('Value', types.BigInt, data.Value);
+    request.addParameter('Resolution', types.VarChar, data.Resolution);
+
+    connection.callProcedure(request);
+});
+
 function calculateStDev(data) {
     var total, mean, diffData, diff, sum;
 

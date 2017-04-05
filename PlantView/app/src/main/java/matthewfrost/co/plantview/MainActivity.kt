@@ -1,5 +1,6 @@
 package matthewfrost.co.plantview
 
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -24,14 +25,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.charset.Charset
 import java.util.*
 import android.database.sqlite.SQLiteDatabase
+import android.opengl.Visibility
 import android.os.Handler
+import android.support.v4.app.FragmentActivity
+import android.widget.Toast
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
+import kotlinx.android.synthetic.main.resolution_dialog.*
 
 
-class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener {
+class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener  {
 
     lateinit var mSurfaceHolder: SurfaceHolder
     lateinit var mSensorManager: SensorManager
@@ -56,7 +61,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
-    var serverIP : String = "152.105.135.220"
+    var serverIP : String = "109.147.188.123"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +178,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     fun getLocationData(ID : Int){
-    var URL : String = "http://" + serverIP + ":8082/getData?id=" + ID;
+    var URL : String = "http://" + serverIP + ":3001/getData?id=" + ID;
 
         Http.init(baseContext)
         Http.get{
@@ -281,6 +286,16 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 var adapter: LocationDataAdapter = LocationDataAdapter(baseContext, android.R.layout.simple_list_item_1, anomalies)
                 handler.post {
                     listView.setAdapter(adapter)
+                    listView.setOnItemClickListener { parent, view, position, id ->
+//                        var dialog : ResolutionDialog = ResolutionDialog()
+//                        dialog.show(getFragmentManager(), "resolution")
+//                        cardView.setVisibility(View.GONE)
+                        var dialog : ResolutionDialog = ResolutionDialog(this)
+                        submit.setOnClickListener{
+                            Toast.makeText(applicationContext, "test", Toast.LENGTH_SHORT).show()
+                        }
+                        dialog.show()
+                    }
                     graph.viewport.setMaxY(100.0)
                     graph.viewport.setYAxisBoundsManual(true)
                     graph.gridLabelRenderer.setLabelFormatter(DateAsXAxisLabelFormatter(graph.context))
@@ -300,8 +315,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     }
 
+    fun submitResolution(resolution : String, id : Int){
+
+    }
+
     fun getLocations(location : android.location.Location){
-        var URL : String = "http://" + serverIP + ":8081/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://" + serverIP + ":3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

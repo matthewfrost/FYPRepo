@@ -1,5 +1,6 @@
 package matthewfrost.co.plantview
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
@@ -61,7 +62,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
-    var serverIP : String = "109.147.188.123"
+    var serverIP : String = "86.157.143.23"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -290,10 +291,8 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
 //                        var dialog : ResolutionDialog = ResolutionDialog()
 //                        dialog.show(getFragmentManager(), "resolution")
 //                        cardView.setVisibility(View.GONE)
-                        var dialog : ResolutionDialog = ResolutionDialog(this)
-                        submit.setOnClickListener{
-                            Toast.makeText(applicationContext, "test", Toast.LENGTH_SHORT).show()
-                        }
+                        var selectedItem = anomalies.get(position)
+                        var dialog : ResolutionDialog = ResolutionDialog(this@MainActivity, selectedItem)
                         dialog.show()
                     }
                     graph.viewport.setMaxY(100.0)

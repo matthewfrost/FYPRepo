@@ -53,6 +53,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     lateinit var db : SQLiteDatabase
     lateinit var barcodeReader : BarcodeDetector
     lateinit var cameraSurface : CameraSource
+    var currentLocation : Int = 0
     var scanQR : Boolean = true
 
     var North : MutableList<Location> =  arrayListOf()
@@ -62,7 +63,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
-    var serverIP : String = "86.157.143.23"
+    var serverIP : String = "109.147.44.68"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,7 +181,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
 
     fun getLocationData(ID : Int){
     var URL : String = "http://" + serverIP + ":3001/getData?id=" + ID;
-
+        currentLocation = ID
         Http.init(baseContext)
         Http.get{
             url = URL
@@ -288,11 +289,8 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
                 handler.post {
                     listView.setAdapter(adapter)
                     listView.setOnItemClickListener { parent, view, position, id ->
-//                        var dialog : ResolutionDialog = ResolutionDialog()
-//                        dialog.show(getFragmentManager(), "resolution")
-//                        cardView.setVisibility(View.GONE)
                         var selectedItem = anomalies.get(position)
-                        var dialog : ResolutionDialog = ResolutionDialog(this@MainActivity, selectedItem)
+                        var dialog : ResolutionDialog = ResolutionDialog(this@MainActivity, selectedItem, currentLocation)
                         dialog.show()
                     }
                     graph.viewport.setMaxY(100.0)

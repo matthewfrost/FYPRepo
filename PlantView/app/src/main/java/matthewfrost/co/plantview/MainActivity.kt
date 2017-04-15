@@ -57,7 +57,10 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var selectedItem : Long = 0
     var currentLocation : Int = 0
     var scanQR : Boolean = true
-
+    var NorthAnomaly : Boolean = false
+    var EastAnomaly : Boolean = false
+    var WestAnomaly : Boolean = false
+    var SouthAnomaly : Boolean = false
     var North : MutableList<Location> =  arrayListOf()
     var East : MutableList<Location> = arrayListOf()
     var South : MutableList<Location> = arrayListOf()
@@ -139,7 +142,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         locationAPI.removeLocationUpdates(mGoogleApi, this)
         cameraSurface.release()
         cameraSurface.stop()
-        startService(Intent(this, AnomalyService::class.java))
+        //startService(Intent(this, AnomalyService::class.java))
     }
 
     override fun onResume(){
@@ -184,7 +187,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     }
 
     fun getAnomalies(lat : Double, long : Double){
-        var URL : String = "http://" + serverIP + "8083/getAnomalies"
+        var URL : String = "http://" + serverIP + ":8083/getAnomalies?lat=" + lat + "&long=" + long
         Http.init(baseContext)
         Http.get{
             url = URL
@@ -201,6 +204,31 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
                 val gson: Gson = Gson()
                 val JSONResponse = Response.toString(Charset.defaultCharset())
                 Anomalies = gson.fromJson(JSONResponse, Array<Anomaly>::class.java).toMutableList()
+                for(a in Anomalies){
+                    var location = android.location.Location("")
+                    location.setLatitude(a.Latitude)
+                    location.setLongitude(a.Longitude)
+
+                    var diffLong = (location.getLongitude() - lastLocation.longitude)
+                    var y = Math.sin(diffLong) * Math.cos(location.getLatitude())
+                    var x = Math.cos(lastLocation.latitude)*Math.sin(location.getLatitude()) - Math.sin(lastLocation.latitude)*Math.cos(location.getLatitude())*Math.cos(diffLong)
+                    var compass_bearing = Math.toDegrees(Math.atan2(y, x))
+                    compass_bearing = (360 - ((compass_bearing + 360) % 360))
+
+                    if(compass_bearing >= 315 || compass_bearing < 45){
+                        NorthAnomaly = true
+                    }
+                    else if(compass_bearing >= 45 && compass_bearing < 135){
+                        EastAnomaly = true
+                    }
+                    else if(compass_bearing >= 135 && compass_bearing < 225){
+                        SouthAnomaly = true
+                    }
+                    else {
+                        WestAnomaly = true
+                    }
+
+                }
             }
         }
     }
@@ -474,6 +502,30 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         bottom.setText(South.size.toString())
         left.setText(West.size.toString())
         selectedArray = North
+        if(NorthAnomaly){
+            topAnomaly.setText("!")
+        }
+        else{
+            topAnomaly.setText("")
+        }
+        if(EastAnomaly){
+            rightAnomaly.setText("!")
+        }
+        else{
+            rightAnomaly.setText("")
+        }
+        if(SouthAnomaly){
+            bottomAnomaly.setText("!")
+        }
+        else{
+            bottomAnomaly.setText("")
+        }
+        if(WestAnomaly){
+            leftAnomaly.setText("!")
+        }
+        else{
+            leftAnomaly.setText("")
+        }
     }
 
     fun faceEast(){
@@ -482,6 +534,30 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         bottom.setText(West.size.toString())
         left.setText(North.size.toString())
         selectedArray = East
+        if(NorthAnomaly){
+            leftAnomaly.setText("!")
+        }
+        else{
+            leftAnomaly.setText("")
+        }
+        if(EastAnomaly){
+            topAnomaly.setText("!")
+        }
+        else{
+            topAnomaly.setText("")
+        }
+        if(SouthAnomaly){
+            rightAnomaly.setText("!")
+        }
+        else{
+            rightAnomaly.setText("")
+        }
+        if(WestAnomaly){
+            bottomAnomaly.setText("!")
+        }
+        else{
+            bottomAnomaly.setText("")
+        }
     }
 
     fun faceSouth(){
@@ -490,6 +566,30 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         bottom.setText(North.size.toString())
         left.setText(East.size.toString())
         selectedArray = South
+        if(NorthAnomaly){
+            bottomAnomaly.setText("!")
+        }
+        else{
+            bottomAnomaly.setText("")
+        }
+        if(EastAnomaly){
+            leftAnomaly.setText("!")
+        }
+        else{
+            leftAnomaly.setText("")
+        }
+        if(SouthAnomaly){
+            topAnomaly.setText("!")
+        }
+        else{
+            topAnomaly.setText("")
+        }
+        if(WestAnomaly){
+            rightAnomaly.setText("!")
+        }
+        else{
+            rightAnomaly.setText("")
+        }
     }
 
     fun faceWest(){
@@ -498,5 +598,29 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         bottom.setText(East.size.toString())
         left.setText(South.size.toString())
         selectedArray = West
+        if(NorthAnomaly){
+            rightAnomaly.setText("!")
+        }
+        else{
+            rightAnomaly.setText("")
+        }
+        if(EastAnomaly){
+            bottomAnomaly.setText("!")
+        }
+        else{
+            bottomAnomaly.setText("")
+        }
+        if(SouthAnomaly){
+            leftAnomaly.setText("!")
+        }
+        else{
+            leftAnomaly.setText("")
+        }
+        if(WestAnomaly){
+            topAnomaly.setText("!")
+        }
+        else{
+            topAnomaly.setText("")
+        }
     }
 }

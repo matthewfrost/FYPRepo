@@ -105,5 +105,48 @@
 
     </android.support.v7.widget.CardView>
 
+    <TextView
+        android:id="@+id/topAnomaly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/top"
+        android:layout_alignStart="@+id/top"
+        android:layout_marginStart="55dp"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/leftAnomaly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/left"
+        android:layout_marginStart="41dp"
+        android:layout_toEndOf="@+id/cardView"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/bottomAnomaly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom"
+        android:layout_alignEnd="@+id/topAnomaly"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/rightAnomaly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/leftAnomaly"
+        android:layout_marginEnd="58dp"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp" />
+
 
 </RelativeLayout>

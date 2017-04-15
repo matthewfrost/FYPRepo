@@ -12,10 +12,14 @@ public class Anomaly
     String Location;
     Long Value;
     Date Timestamp;
+    Double Latitude;
+    Double Longitude;
 
-    public Anomaly(String L, Long V, Date T){
+    public Anomaly(String L, Long V, Date T, Double lat, Double longitude){
         Location = L;
         Value = V;
         Timestamp = T;
+        Latitude = lat;
+        this.Longitude = longitude;
     }
 }

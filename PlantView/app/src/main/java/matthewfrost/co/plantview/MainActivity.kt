@@ -34,6 +34,7 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
+import com.ohmerhe.kolley.request.RequestPairs
 import kotlinx.android.synthetic.main.resolution_dialog.*
 
 
@@ -53,6 +54,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     lateinit var db : SQLiteDatabase
     lateinit var barcodeReader : BarcodeDetector
     lateinit var cameraSurface : CameraSource
+    var selectedItem : Long = 0
     var currentLocation : Int = 0
     var scanQR : Boolean = true
 
@@ -63,7 +65,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
-    var serverIP : String = "109.147.44.68"
+    var serverIP : String = "192.168.1.73"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,8 +181,9 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         getLocations(p0 as android.location.Location)
     }
 
+
     fun getLocationData(ID : Int){
-    var URL : String = "http://" + serverIP + ":3001/getData?id=" + ID;
+    var URL : String = "http://" + serverIP + ":8082/getData?id=" + ID
         currentLocation = ID
         Http.init(baseContext)
         Http.get{
@@ -290,7 +293,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
                     listView.setAdapter(adapter)
                     listView.setOnItemClickListener { parent, view, position, id ->
                         var selectedItem = anomalies.get(position)
-                        var dialog : ResolutionDialog = ResolutionDialog(this@MainActivity, selectedItem, currentLocation)
+                        var dialog : ResolutionDialog = ResolutionDialog(this@MainActivity, selectedItem, currentLocation, this)
                         dialog.show()
                     }
                     graph.viewport.setMaxY(100.0)
@@ -312,12 +315,9 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
 
     }
 
-    fun submitResolution(resolution : String, id : Int){
-
-    }
 
     fun getLocations(location : android.location.Location){
-        var URL : String = "http://" + serverIP + ":3000/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
+        var URL : String = "http://" + serverIP + ":8081/getByLocation?lat=" + location.latitude.toString() + "&long=" + location.longitude.toString()
 
         Http.init(baseContext)
         Http.get {

@@ -8,23 +8,6 @@ var password = process.argv[2];
 var types = require('tedious').TYPES;
 var Location = require("./Location.js");
 
-var config = {
-    userName: 'FYPracticeDev',
-    password: password,
-    server: '152.105.135.220',
-    options: {
-        port: 1433,
-        database: 'FYPractice',
-        rowCollectionOnRequestCompletion: true
-    }
-}
-
-var connection = new Connection(config);
-
-connection.on('connect', function (err) {
-    console.log("connected");
-});
-
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
@@ -37,6 +20,42 @@ app.use(parser.urlencoded({
     extended: true
 }));
 app.use(parser.json());
+
+var config = {
+    userName: 'FYPracticeDev',
+    password: password,
+    server: '192.168.1.73',
+    options: {
+        port: 49175,
+        database: 'FYPractice',
+        rowCollectionOnRequestCompletion: true
+    }
+}
+
+var connection = new Connection(config);
+
+connection.on('connect', function (err) {
+    console.log("connected");
+});
+
+app.post('/submitResolution', function (req, res) {
+    var data, sql, request;
+    console.log("submit");
+    data = req.body;
+    console.log(data);
+    console.log(req);
+    sql = 'dbo.submitResolution';
+
+    request = new Request(sql, function (err, rowCount, rows) {
+
+    });
+
+    request.addParameter('LocationID', types.Int, data.LocationID);
+    request.addParameter('Value', types.BigInt, data.Value);
+    request.addParameter('Resolution', types.VarChar, data.Resolution);
+
+    connection.callProcedure(request);
+});
 
 app.get('/getAnomalies', function (req, res) {
     var lat, long, posLat, posLong, negLat, negLong, sql, request, data, currentLocation, currentIndex;
@@ -88,24 +107,6 @@ app.get('/getAnomalies', function (req, res) {
     request.addParameter('posLat', types.Float, posLat);
     request.addParameter('negLong', types.Float, negLong);
     request.addParameter('posLong', types.Float, posLong);
-
-    connection.callProcedure(request);
-});
-
-app.post('/submitResolution', function (req, res) {
-    var data, sql, request;
-
-    data = req.body;
-
-    sql = 'dbo.submitResolution';
-
-    request = new Request(sql, function (err, rowCount, rows) {
-
-    });
-
-    request.addParameter('LocationID', types.Int, data.LocationID);
-    request.addParameter('Value', types.BigInt, data.Value);
-    request.addParameter('Resolution', types.VarChar, data.Resolution);
 
     connection.callProcedure(request);
 });

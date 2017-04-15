@@ -25,7 +25,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '152.105.135.220',
+    server: '192.168.1.73',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -188,6 +188,24 @@ app.post('/submit', function (req, res) {
 
 
     //res.sendStatus(200);
+});
+
+app.post('/submitResolution', function (req, res) {
+    var data, sql, request;
+    console.log("submit");
+    data = req.body;
+
+    sql = 'dbo.submitResolution';
+
+    request = new Request(sql, function (err, rowCount, rows) {
+
+    });
+
+    request.addParameter('LocationID', types.Int, data.LocationID);
+    request.addParameter('Value', types.BigInt, data.Value);
+    request.addParameter('Resolution', types.VarChar, data.Resolution);
+
+    connection.callProcedure(request);
 });
 
 app.listen(process.env.PORT || '8081');

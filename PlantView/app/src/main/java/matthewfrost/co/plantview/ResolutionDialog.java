@@ -34,9 +34,11 @@ public class ResolutionDialog extends Dialog implements View.OnClickListener
     LocationData item;
     int locationID;
     EditText resolution;
+    MainActivity ma;
 
-    public ResolutionDialog(Activity a, LocationData data, int locationID){
+    public ResolutionDialog(Activity a, LocationData data, int locationID, MainActivity ma){
         super(a);
+        this.ma = ma;
         c = a;
         item = data;
         this.locationID = locationID;
@@ -64,7 +66,7 @@ public class ResolutionDialog extends Dialog implements View.OnClickListener
             case R.id.submit:
                 try {
                     RequestQueue queue = Volley.newRequestQueue(c);
-                    String url = "http://109.147.44.68:3002/submitResolution";
+                    String url = "http://192.168.1.73:8083/submitResolution";
                     JSONObject body = new JSONObject();
                     body.put("LocationID", locationID);
                     body.put("Value", item.Data);
@@ -102,7 +104,7 @@ public class ResolutionDialog extends Dialog implements View.OnClickListener
                     queue.add(request);
                 }
                 catch(Exception e){
-
+                    Log.v("error", e.getMessage());
                 }
 
         }

@@ -82,7 +82,7 @@ app.get('/getAnomalies', function (req, res) {
         } else {
             var rowArray = [];
             rows.forEach(function (columns) {
-                var location = new Location(columns[0].value, columns[1].value, columns[2].value, columns[3].value);
+                var location = new Location(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value, columns[5].value);
                 if(location.Name != currentLocation){
                     data.push([]);
                     currentLocation = location.Name;
@@ -119,7 +119,7 @@ function calculateStDev(data) {
     for (var i = 1; i < data.length; i++) {
         diff = 0;
         diff = data[i].Data - data[i - 1].Data;
-        diffData.push({ Location: data[i].Name, Value: diff, Timestamp: data[i].Timestamp });
+        diffData.push({ Location: data[i].Name, Value: diff, Timestamp: data[i].Timestamp, Latitude: data[i].Latitude, Longitude: data[i].Longitude });
         total += diff;
         
     }

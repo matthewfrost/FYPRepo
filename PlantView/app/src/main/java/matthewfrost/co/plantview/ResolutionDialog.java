@@ -106,6 +106,7 @@ public class ResolutionDialog extends Dialog implements View.OnClickListener
                 catch(Exception e){
                     Log.v("error", e.getMessage());
                 }
+                break;
 
         }
     }

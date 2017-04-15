@@ -65,6 +65,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var allLocations : MutableList<Location> = arrayListOf()
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
+    var Anomalies : MutableList<Anomaly> = arrayListOf()
     var serverIP : String = "192.168.1.73"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,6 +180,29 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
 
     override fun onLocationChanged(p0: android.location.Location?) {
         getLocations(p0 as android.location.Location)
+        getAnomalies(p0.latitude, p0.longitude)
+    }
+
+    fun getAnomalies(lat : Double, long : Double){
+        var URL : String = "http://" + serverIP + "8083/getAnomalies"
+        Http.init(baseContext)
+        Http.get{
+            url = URL
+
+            tag = this@MainActivity
+
+            headers {
+                "Content-Type" - "application/json"
+                "Data-Type" - "application/json"
+            }
+
+            onSuccess{
+                Response ->
+                val gson: Gson = Gson()
+                val JSONResponse = Response.toString(Charset.defaultCharset())
+                Anomalies = gson.fromJson(JSONResponse, Array<Anomaly>::class.java).toMutableList()
+            }
+        }
     }
 
 

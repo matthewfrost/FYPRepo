@@ -10,8 +10,8 @@ namespace ParseTextFiles
     {
         public string Building;
         public Int64 MeterID;
-       public DateTime datetime;
-       public Int64 Value;
+        public DateTime datetime;
+        public Int64 Value;
 
         public Reading(string building, Int64 id, DateTime date, Int64 value)
         {

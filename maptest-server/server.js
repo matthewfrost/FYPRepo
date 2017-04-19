@@ -25,7 +25,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.73',
+    server: '152.105.98.111',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };

@@ -52,7 +52,12 @@ var Map = $.extend(true, {}, Map, {
                 Location.LocationName(ViewModel.selectedLocation().LocationName());
                 Location.Database(ViewModel.selectedLocation().Database());
                 Location.Table(ViewModel.selectedLocation().Table());
-                Location.Column(ViewModel.selectedValue().Name());
+                if (ViewModel.selectedLocation().Column() == null) {
+                    Location.Column(ViewModel.selectedValue().Column());
+                }
+                else {
+                    Location.Column(ViewModel.selectedLocation().Column);
+                }
                 Location.ColumnValue(ViewModel.selectedLocation().ColumnValue());
                 ViewModel.getSchema();
                 Location.Latitude(ViewModel.selectedLocation().Latitude());
@@ -133,7 +138,7 @@ var Map = $.extend(true, {}, Map, {
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
-        center: { lat: 54.5779746, lng: -1.1043465 },
+        center: { lat: 54.5703108, lng: -1.2366919 },
         disableDoubleClickZoom: true
     });
 

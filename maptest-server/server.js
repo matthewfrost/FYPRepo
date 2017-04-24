@@ -25,7 +25,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '152.105.99.246',
+    server: '192.168.1.73',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -165,8 +165,12 @@ app.post('/submit', function (req, res) {
         var sql = 'dbo.Location_Merge';
         var request = new Request(sql, function (err, rowCount, rows) {
             var item = rows[0];
-
-            res.json(item[0].value);
+            if (err) {
+                res.json(500);
+            }
+            else {
+                res.json(item[0].value);
+            }
         });
 
         request.addParameter('ID', types.Int, item.ID);

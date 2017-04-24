@@ -13,7 +13,7 @@ describe('testing location web service', function () {
                 if (err) {
                     throw err;
                 }
-                res.body.should.have.length(13);
+                res.body.should.have.length(14);
                 done();
             });
     });
@@ -39,6 +39,40 @@ describe('testing location web service', function () {
                 done();
             });
     });
+    it('should allow the submission of a valid location', function createLocation(done) {
+        var location = {
+            LocationName: 'testLocation',
+            ColumnValue: 'testLocation',
+            Database: 'FYPractice',
+            Table: 'Energy',
+            Column: 'Item',
+            Latitude: '54.5656977',
+            Longitude: '-1.2372124'
+        }
+        request(url)
+            .post('submit')
+            .send(location)
+            .end(function (err, res) {
+                res.body.should.not.equal(500);
+                done();
+            });
+    });
+    it('should not allow the creation of an invalid location', function invalidLocation(done) {
+        var location = {
+            LocationName: 'testLocation',
+            ColumnValue: 'testLocation',
+            Table: 'Energy',
+            Column: 'Item',
+            Latitude: '54.5656977'
+        }
+        request(url)
+            .post('submit')
+            .send(location)
+            .end(function (err, res) {
+                res.body.should.equal(500);
+                done();
+            });
+    })
     it('should allow the deleting of locations', function deleteLocation(done) {
         var id = {
             data: 29

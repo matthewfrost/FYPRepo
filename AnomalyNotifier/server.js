@@ -24,7 +24,7 @@ app.use(parser.json());
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '152.105.196.151',
+    server: '192.168.1.73',
     options: {
         port: 49175,
         database: 'FYPractice',

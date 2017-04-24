@@ -24,7 +24,7 @@ app.use(parser.json());
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.73',
+    server: '152.105.196.151',
     options: {
         port: 49175,
         database: 'FYPractice',
@@ -47,7 +47,12 @@ app.post('/submitResolution', function (req, res) {
     sql = 'dbo.submitResolution';
 
     request = new Request(sql, function (err, rowCount, rows) {
-
+        if (err) {
+            res.sendStatus(500);
+        }
+        else {
+            res.sendStatus(200);
+        }
     });
 
     request.addParameter('LocationID', types.Int, data.LocationID);

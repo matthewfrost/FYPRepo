@@ -25,7 +25,7 @@ var json = [];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.73',
+    server: '152.105.99.246',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -92,10 +92,15 @@ app.get('/getAll', function (req, res) {
     connection.execSql(request);
 });
 
-var deleteTag = function (id) {
+var deleteTag = function (id, res) {
     var sql = 'dbo.Location_Delete';
     var request = new Request(sql, function (err) {
-
+        if (err) {
+            res.sendStatus(500);
+        }
+        else {
+            res.sendStatus(200);
+        }
     });
 
     request.addParameter('ID', types.Int, id);
@@ -148,10 +153,8 @@ app.put('/delete', function (req, res) {
     debugger;
     id = req.body;
 
-    deleteTag(id.data);
-    res.sendStatus(200);
-    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    console.log("here " + ip);
+    deleteTag(id.data, res);
+    //res.sendStatus(200);
 });
 
 app.post('/submit', function (req, res) {
@@ -190,23 +193,23 @@ app.post('/submit', function (req, res) {
     //res.sendStatus(200);
 });
 
-app.post('/submitResolution', function (req, res) {
-    var data, sql, request;
-    console.log("submit");
-    data = req.body;
+//app.post('/submitResolution', function (req, res) {
+//    var data, sql, request;
+//    console.log("submit");
+//    data = req.body;
 
-    sql = 'dbo.submitResolution';
+//    sql = 'dbo.submitResolution';
 
-    request = new Request(sql, function (err, rowCount, rows) {
+//    request = new Request(sql, function (err, rowCount, rows) {
 
-    });
+//    });
 
-    request.addParameter('LocationID', types.Int, data.LocationID);
-    request.addParameter('Value', types.BigInt, data.Value);
-    request.addParameter('Resolution', types.VarChar, data.Resolution);
+//    request.addParameter('LocationID', types.Int, data.LocationID);
+//    request.addParameter('Value', types.BigInt, data.Value);
+//    request.addParameter('Resolution', types.VarChar, data.Resolution);
 
-    connection.callProcedure(request);
-});
+//    connection.callProcedure(request);
+//});
 
 app.listen(process.env.PORT || '8081');
 

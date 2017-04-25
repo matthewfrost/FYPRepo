@@ -24,7 +24,7 @@ app.use(parser.json());
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '192.168.1.73',
+    server: '152.105.196.186',
     options: {
         port: 49175,
         database: 'FYPractice',
@@ -143,7 +143,7 @@ function calculateStDev(data) {
     var stdDev = Math.pow(y, 0.5);
     for (var i = 0; i < diffData.length; i++) {
         var current = diffData[i];
-        if (current.Value > (mean + (2 * stdDev)) || current.Value < (mean - (2 * stdDev))) {
+        if (current.Value > (mean + (4 * stdDev)) || current.Value < (mean - (4 * stdDev))) {
             json.push(current);
         }
     }

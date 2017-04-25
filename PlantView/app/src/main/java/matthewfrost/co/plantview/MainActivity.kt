@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.opengl.Visibility
 import android.os.Handler
 import android.support.v4.app.FragmentActivity
+import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
@@ -69,7 +70,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
     var Anomalies : MutableList<Anomaly> = arrayListOf()
-    var serverIP : String = "192.168.1.73"
+    var serverIP : String = "152.105.196.186"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -334,7 +335,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
                 for (data in locationData) {
                     if (index < locationData.size) {
                         var current = (locationData.get(index).Data - locationData.get(index - 1).Data)
-                        if (current > (mean + (2 * stdDev)) || current < (mean - (2 * stdDev))) {
+                        if (current > (mean + (4 * stdDev)) || current < (mean - (4 * stdDev))) {
                             anomalies.add(LocationData(locationData.get(index).Item, current, locationData.get(index).Timestamp))
                         }
                         index++
@@ -420,6 +421,9 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
             }
 
             onFail {
+                error ->
+                    Log.v("error", error.toString())
+
             }
         }
     }

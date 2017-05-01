@@ -51,7 +51,6 @@ app.get('/getSchema', function (req, res) {
         } else {
             var rowArray = [];
             rows.forEach(function (columns) {
-                //var tag = new Tag(columns[0].value, columns[1].value, columns[2].value, columns[3].value, columns[4].value);
                 json.push({
                     columnName: columns[0].value
                 });
@@ -82,7 +81,6 @@ app.get('/getAll', function (req, res) {
             });
             console.log("here")
             res.status(200).send(json);
-            //res.sendStatus(200);
             json = [];
         }
 
@@ -154,7 +152,6 @@ app.put('/delete', function (req, res) {
     id = req.body;
 
     deleteTag(id.data, res);
-    //res.sendStatus(200);
 });
 
 app.post('/submit', function (req, res) {
@@ -181,7 +178,6 @@ app.post('/submit', function (req, res) {
         request.addParameter('Column', types.VarChar, item.Column);
         request.addParameter('Latitude', types.Float, item.Latitude);
         request.addParameter('Longitude', types.Float, item.Longitude);
-        //request.addOutputParameter('ID', types.Int);
 
         request.on('returnValue', function (parameterName, value, metadata) {
             res.json["{'ID': " + value + "}"];
@@ -189,31 +185,9 @@ app.post('/submit', function (req, res) {
 
         connection.callProcedure(request);
     }
-    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    console.log("here " + ip);
     createTag(item);
-
-
-    //res.sendStatus(200);
 });
 
-//app.post('/submitResolution', function (req, res) {
-//    var data, sql, request;
-//    console.log("submit");
-//    data = req.body;
-
-//    sql = 'dbo.submitResolution';
-
-//    request = new Request(sql, function (err, rowCount, rows) {
-
-//    });
-
-//    request.addParameter('LocationID', types.Int, data.LocationID);
-//    request.addParameter('Value', types.BigInt, data.Value);
-//    request.addParameter('Resolution', types.VarChar, data.Resolution);
-
-//    connection.callProcedure(request);
-//});
 
 app.listen(process.env.PORT || '8081');
 

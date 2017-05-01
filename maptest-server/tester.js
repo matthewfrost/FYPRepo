@@ -17,7 +17,7 @@ describe('testing location web service', function () {
                 done();
             });
     });
-    it('should get a locations near a given location', function byLocation(done) {
+    it('should get all locations near a given location', function byLocation(done) {
         request(url)
             .get('getByLocation?lat=54.569467&long=-1.2342727')
             .end(function (err, res) {

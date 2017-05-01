@@ -11,7 +11,7 @@ var password = process.argv[2];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '152.105.196.186',
+    server: '152.105.199.178',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };
@@ -39,11 +39,6 @@ app.get('/getData', function(req,res){
     var db, table, column, columnValue;
 
     var data = req.query;
-
-    //db = data.database;
-    //table = data.table;
-    //column = data.column;
-    //columnValue = data.columnValue;
     ID = data.id
 
     var query = "dbo.GetData"
@@ -63,10 +58,6 @@ app.get('/getData', function(req,res){
         }
 
     });
-    //request.addParameter('Database', types.VarChar, db);
-    //request.addParameter('Table', types.VarChar, table);
-    //request.addParameter('Column', types.VarChar, column);
-    //request.addParameter('ColumnValue', types.VarChar, columnValue);
     request.addParameter('ID', types.Int, ID);
 
     connection.callProcedure(request);

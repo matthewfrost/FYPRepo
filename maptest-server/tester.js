@@ -84,6 +84,5 @@ describe('testing location web service', function () {
                 res.statusCode.should.equal(200);
             });
         done();
-    });
-    
+    }); 
 });

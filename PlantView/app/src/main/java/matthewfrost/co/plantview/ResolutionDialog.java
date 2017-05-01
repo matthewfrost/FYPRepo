@@ -66,7 +66,7 @@ public class ResolutionDialog extends Dialog implements View.OnClickListener
             case R.id.submit:
                 try {
                     RequestQueue queue = Volley.newRequestQueue(c);
-                    String url = "http://152.105.199.178:8083/submitResolution";
+                    String url = "http://192.168.0.100:8083/submitResolution";
                     JSONObject body = new JSONObject();
                     body.put("LocationID", locationID);
                     body.put("Value", item.Data);

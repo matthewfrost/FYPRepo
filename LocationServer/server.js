@@ -11,7 +11,7 @@ var password = process.argv[2];
 var config = {
     userName: 'FYPracticeDev',
     password: password,
-    server: '152.105.199.178',
+    server: '192.168.0.100',
 
     options: { port: 49175, database: 'FYPractice', rowCollectionOnRequestCompletion: true }
 };

@@ -4,14 +4,11 @@ describe('testing anomaly notifier', function () {
     var url;
     url = 'http://localhost:8083/'
     beforeEach(function (done) {
-        //server = require('./server');
         done();
     });
     afterEach(function () {
-        //server.close();
     });
     it('should return 4 anomalies', function testAnomalyService(done) {
-        //console.log(done);
         request(url)
             .get('getAnomalies?lat=54.569467&long=-1.2342727')
             .end(function (err, res) {
@@ -61,5 +58,4 @@ describe('testing anomaly notifier', function () {
             });
         done();
     });
-
-})
+});

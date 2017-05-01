@@ -70,7 +70,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
     var Anomalies : MutableList<Anomaly> = arrayListOf()
-    var serverIP : String = "152.105.199.178"
+    var serverIP : String = "192.168.0.100"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

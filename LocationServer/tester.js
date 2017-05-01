@@ -14,4 +14,4 @@ describe('testing location data web service', function () {
                 done();
             });
     });
-})
+});

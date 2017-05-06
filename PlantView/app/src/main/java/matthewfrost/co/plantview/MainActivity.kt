@@ -1,13 +1,9 @@
 package matthewfrost.co.plantview
 
-import android.app.Activity
-import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.hardware.*
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.SurfaceHolder
 import android.view.View
@@ -26,17 +22,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.charset.Charset
 import java.util.*
 import android.database.sqlite.SQLiteDatabase
-import android.opengl.Visibility
 import android.os.Handler
 import android.support.v4.app.FragmentActivity
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import com.ohmerhe.kolley.request.RequestPairs
-import kotlinx.android.synthetic.main.resolution_dialog.*
 
 
 class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener  {
@@ -70,7 +62,7 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
     var selectedArray : MutableList<Location> = arrayListOf()
     var locationData : MutableList<LocationData> = arrayListOf()
     var Anomalies : MutableList<Anomaly> = arrayListOf()
-    var serverIP : String = "192.168.0.100"
+    var serverIP : String = "192.168.1.73"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -464,6 +456,10 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         left.setVisibility(View.GONE)
         gridView.setVisibility(View.VISIBLE)
         gridView.setAdapter(LocationAdapter(selectedArray, this))
+        leftAnomaly.setVisibility(View.GONE)
+        rightAnomaly.setVisibility(View.GONE)
+        topAnomaly.setVisibility(View.GONE)
+        bottomAnomaly.setVisibility(View.GONE)
     }
 
     public fun showCardView(ID: Int, Name : String){
@@ -479,6 +475,10 @@ class MainActivity : FragmentActivity(), GoogleApiClient.OnConnectionFailedListe
         right.setVisibility(View.VISIBLE)
         bottom.setVisibility(View.VISIBLE)
         left.setVisibility(View.VISIBLE)
+        leftAnomaly.setVisibility(View.VISIBLE)
+        rightAnomaly.setVisibility(View.VISIBLE)
+        topAnomaly.setVisibility(View.VISIBLE)
+        bottomAnomaly.setVisibility(View.VISIBLE)
         gridView.setVisibility(View.GONE)
     }
 
